@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8fb">
+  <meta name="description" content="Kishlay Multispeciality Hospital, Northfield — hospital management system demo with clearly labeled sample records.">
+  <title>Kishlay Multispeciality Hospital — HMS Demo</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #3a2028;
+      --muted: #86757a;
+      --line: #f0e2e5;
+      --canvas: #fbf5f6;
+      --surface: #fff;
+      --navy: #64172e;
+      --teal: #b51e48;
+      --teal-soft: #fbe9ee;
+      --blue-soft: #f9e9ee;
+      --green: #248054;
+      --green-soft: #e6f4eb;
+      --amber: #a76c16;
+      --amber-soft: #fff3df;
+      --red: #b94a4a;
+      --red-soft: #fff0ed;
+      --shadow: 0 10px 30px rgba(112, 31, 54, .075);
+      --mint: #fae9ee;
+      --violet-soft: #f1edff;
+      --coral-soft: #fff0e9;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: radial-gradient(ellipse at 92% 8%,rgba(243,204,215,.3),transparent 30%),var(--canvas); color: var(--ink); font-size: 13px; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    .app { min-height: 100vh; }
+    .sidebar { position: fixed; z-index: 20; inset: 0 auto 0 0; width: 246px; display: flex; flex-direction: column; overflow-x: hidden; overflow-y: auto; padding: 21px 15px 16px; background: linear-gradient(165deg,#62162d 0%,#821c3b 55%,#4e1931 100%); color: #fff3f6; scrollbar-color: #985269 transparent; scrollbar-width: thin; transition: transform .22s ease; }
+    .sidebar-close { position: absolute; top: 21px; right: 12px; display: none; width: 32px; height: 32px; place-items: center; border: 1px solid rgba(255,255,255,.2); border-radius: 8px; background: transparent; color: #eaf3f7; font-size: 17px; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 24px; }
+    .brand-mark { width: 37px; height: 37px; display: grid; place-items: center; border-radius: 12px; background: #ffe4eb; color: #a71c43; font-size: 20px; font-weight: 800; box-shadow: 0 4px 14px rgba(242,146,171,.24); }
+    .brand strong { display: block; font-size: 16px; letter-spacing: -.04em; }
+    .brand small { display: block; margin-top: 3px; color: #e6bcc8; font-size: 10px; }
+    .hospital-select { margin: 0 5px 20px; padding: 11px 12px; border: 1px solid rgba(255,255,255,.16); border-radius: 9px; background: rgba(255,255,255,.075); color: #fff3f6; }
+    .hospital-select small { display: block; margin-bottom: 5px; color: #e2b9c5; font-size: 9px; letter-spacing: .11em; text-transform: uppercase; }
+    .hospital-select strong { display: flex; align-items: center; justify-content: space-between; font-size: 11px; font-weight: 600; }
+    .nav-label { padding: 8px 11px; color: #91aab7; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 3px; }
+    .nav-item { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 11px; border: 0; border-radius: 8px; background: transparent; color: #f1dce2; text-align: left; font-size: 12px; transition: background .15s, color .15s; }
+    .nav-item:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-item.active { background: #fff0f3; color: #821c3b; font-weight: 700; }
+    .nav-icon { width: 18px; color: inherit; text-align: center; font-size: 15px; }
+    .nav-count { margin-left: auto; padding: 2px 7px; border-radius: 20px; background: rgba(255,255,255,.15); color: #fff5f7; font-size: 10px; }
+    .sidebar-spacer { flex: 1; }
+    .demo-card { margin: 14px 5px; padding: 12px; border: 1px solid rgba(255,255,255,.15); border-radius: 10px; background: rgba(255,255,255,.07); }
+    .demo-card strong { display: flex; align-items: center; gap: 7px; font-size: 11px; }
+    .demo-dot { width: 7px; height: 7px; border-radius: 50%; background: #f4a8ba; }
+    .demo-card p { margin: 7px 0 0; color: #ebcbd4; font-size: 10px; line-height: 1.55; }
+    .side-user { display: flex; align-items: center; gap: 10px; padding: 14px 8px 2px; border-top: 1px solid rgba(255,255,255,.15); }
+    .avatar { width: 34px; height: 34px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 50%; background: #d7e8ee; color: #28556b; font-size: 11px; font-weight: 700; }
+    .side-user strong { display: block; font-size: 11px; }
+    .side-user small { display: block; margin-top: 3px; color: #e2b9c5; font-size: 9px; }
+    .main { min-height: 100vh; margin-left: 246px; }
+    .topbar { position: sticky; z-index: 10; top: 0; min-height: 70px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 34px; border-bottom: 1px solid var(--line); background: rgba(255,255,255,.94); backdrop-filter: blur(12px); }
+    .top-left, .top-actions { display: flex; align-items: center; gap: 13px; }
+    .crumb { color: var(--muted); font-size: 11px; }
+    .crumb b { color: var(--ink); font-weight: 600; }
+    .global-search { width: min(335px, 33vw); height: 37px; display: flex; align-items: center; gap: 9px; padding: 0 11px; border: 1px solid var(--line); border-radius: 8px; background: #f9fbfc; color: var(--muted); }
+    .global-search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 11px; }
+    .global-search input::placeholder { color: #9aa8b1; }
+    .icon-button { position: relative; width: 36px; height: 36px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #536978; font-size: 15px; }
+    .icon-button:hover { border-color: #b9d1d7; background: #f7fbfb; }
+    .notification-dot { position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; border: 1px solid #fff; border-radius: 50%; background: #df765f; }
+    .role-select { max-width: 160px; height: 36px; padding: 0 9px; border: 1px solid var(--line); border-radius: 8px; background: white; color: #415866; font-size: 10px; }
+    .mobile-toggle { display: none; }
+    .content { width: min(1450px, 100%); margin: 0 auto; padding: 29px 34px 46px; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 22px; }
+    .page-heading h1 { margin: 0; color: #1b3444; font-size: 25px; font-weight: 750; letter-spacing: -.05em; }
+    .page-heading p { margin: 7px 0 0; color: var(--muted); font-size: 11px; }
+    .dashboard-heading { position: relative; overflow: hidden; min-height: 170px; align-items: center; margin-bottom: 19px; padding: 26px 28px; border: 1px solid rgba(255,255,255,.25); border-radius: 16px; background-color: #64172e; background-image: linear-gradient(100deg,rgba(63,13,31,.94) 0%,rgba(125,22,55,.82) 48%,rgba(113,28,58,.43) 100%),url("https://images.unsplash.com/photo-1538108149393-fbbd81895907?auto=format&fit=crop&w=1600&q=85"); background-position: center,center 53%; background-repeat: no-repeat; background-size: cover; box-shadow: 0 12px 30px rgba(112,31,54,.18); color: white; }
+    .dashboard-heading::after { position: absolute; top: -75px; right: 25%; width: 225px; height: 225px; border: 1px solid rgba(255,255,255,.25); border-radius: 50%; box-shadow: 0 0 0 28px rgba(255,255,255,.055),0 0 0 56px rgba(255,255,255,.035); content: ""; pointer-events: none; }
+    .dashboard-heading h1 { color: #fff; font-size: 29px; text-shadow: 0 2px 16px rgba(4,32,34,.2); }
+    .dashboard-heading p { color: rgba(245,255,253,.83); }
+    .dashboard-heading .heading-actions { position: relative; z-index: 1; }
+    .dashboard-heading .button:not(.primary) { border-color: rgba(36,117,112,.17); background: rgba(255,255,255,.82); }
+    .welcome-kicker { margin: 0 0 7px !important; color: #ffd1de !important; font-size: 9px !important; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 1px 5px rgba(0,0,0,.2); }
+    .hospital-chip { display: inline-flex; align-items: center; gap: 6px; margin-top: 9px; padding: 6px 9px; border: 1px solid rgba(255,255,255,.25); border-radius: 30px; background: rgba(255,255,255,.13); color: #fff3f6; font-size: 9px; font-weight: 600; backdrop-filter: blur(8px); }
+    .heading-actions { display: flex; gap: 8px; }
+    .button { min-height: 36px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: #466070; font-size: 10px; font-weight: 600; }
+    .button:hover { border-color: #bed0d8; background: #f8fbfc; }
+    .button.primary { border-color: var(--teal); background: linear-gradient(135deg,#a8173e,#d42b55); color: #fff; box-shadow: 0 5px 13px rgba(181,30,72,.2); }
+    .button.primary:hover { border-color: #8e1536; background: #941638; }
+    .button.danger { color: var(--red); }
+    .notice { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 19px; padding: 11px 13px; border: 1px solid #f1dce2; border-radius: 10px; background: linear-gradient(100deg,#fff1f4,#fff8f8); color: #76535e; font-size: 10px; line-height: 1.55; }
+    .notice strong { color: #8e2442; }
+    .metrics { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+    .metrics.four-metrics { grid-template-columns: repeat(4, minmax(0,1fr)); }
+    .metric { position: relative; overflow: hidden; min-height: 119px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 13px; background: linear-gradient(145deg,#fff 40%,#fff5f7); box-shadow: var(--shadow); transition: transform .18s ease, box-shadow .18s ease; }
+    .metric:hover { transform: translateY(-3px); box-shadow: 0 13px 30px rgba(28,57,75,.1); }
+    .metric::after { position: absolute; right: -17px; bottom: -34px; width: 76px; height: 76px; border-radius: 50%; background: rgba(181,30,72,.045); content: ""; }
+    .metric-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--muted); font-size: 10px; }
+    .metric-icon { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px; background: var(--blue-soft); color: #39728d; font-size: 17px; }
+    .metric:nth-child(2) .metric-icon { background: #fbe9ee; color: #a52c50; }
+    .metric:nth-child(3) .metric-icon { background: var(--amber-soft); color: var(--amber); }
+    .metric:nth-child(4) .metric-icon { background: var(--green-soft); color: var(--green); }
+    .metric:nth-child(5) .metric-icon { background: var(--coral-soft); color: #bd694e; }
+    .metric-bottom { display: flex; align-items: baseline; gap: 9px; margin-top: 10px; }
+    .metric-value { color: #20394a; font-size: 28px; font-weight: 750; letter-spacing: -.06em; }
+    .metric-trend { color: var(--green); font-size: 9px; }
+    .metric-note { margin-top: 3px; color: #8a9aa4; font-size: 9px; }
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(270px,.9fr); gap: 15px; margin-bottom: 15px; }
+    .panel { min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--surface); box-shadow: var(--shadow); transition: box-shadow .18s ease, transform .18s ease; }
+    .panel:hover { box-shadow: 0 13px 32px rgba(28,57,75,.075); }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 17px 12px; }
+    .panel-header h2 { margin: 0; color: #243e4d; font-size: 12px; font-weight: 700; }
+    .panel-header p { margin: 4px 0 0; color: #8a9aa4; font-size: 9px; }
+    .text-button { padding: 5px 0; border: 0; background: transparent; color: var(--teal); font-size: 10px; font-weight: 600; }
+    .chart-wrap { height: 200px; padding: 1px 14px 12px; }
+    .chart-wrap svg { width: 100%; height: 100%; overflow: visible; }
+    .chart-gridline { stroke: #edf1f3; stroke-width: 1; }
+    .chart-label { fill: #8c9ba5; font: 9px Inter, sans-serif; }
+    .chart-bar { fill: #b7dfd9; }
+    .chart-bar.highlight { fill: #258983; }
+    .chart-legend { display: flex; align-items: center; gap: 7px; color: #83929b; font-size: 9px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; background: #258983; }
+    .appointment-list { padding: 0 17px 7px; }
+    .appointment-row { display: grid; grid-template-columns: 48px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid #f0f3f5; }
+    .appointment-time { color: #57717e; font-size: 10px; font-weight: 700; }
+    .appointment-patient { min-width: 0; }
+    .appointment-patient strong { display: block; overflow: hidden; color: #304957; font-size: 10px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .appointment-patient small { display: block; margin-top: 3px; color: #8b9ba4; font-size: 9px; }
+    .status { display: inline-flex; align-items: center; gap: 5px; padding: 4px 7px; border-radius: 20px; background: #f0f3f5; color: #62727b; font-size: 9px; white-space: nowrap; }
+    .status::before { width: 5px; height: 5px; border-radius: 50%; background: currentColor; content: ""; }
+    .status.scheduled, .status.confirmed, .status.available, .status.completed, .status.paid, .status.in-stock, .status.on-duty { background: var(--green-soft); color: #317a58; }
+    .status.waiting, .status.pending, .status.in-progress, .status.low-stock, .status.due { background: var(--amber-soft); color: #956315; }
+    .status.cancelled, .status.critical, .status.overdue, .status.unavailable { background: var(--red-soft); color: #ab4f49; }
+    .lower-grid { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(245px,.8fr); gap: 15px; }
+    .widget-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 15px; margin-top: 15px; }
+    .department-list,.doctor-list { display: grid; gap: 13px; padding: 0 17px 17px; }
+    .department-row { display: grid; grid-template-columns: 102px 1fr 30px; align-items: center; gap: 10px; color: #637985; font-size: 9px; }
+    .department-track { height: 7px; overflow: hidden; border-radius: 8px; background: #eef2f4; }
+    .department-fill { height: 100%; border-radius: inherit; background: linear-gradient(90deg,#a8173e,#e77a97); }
+    .department-row:nth-child(2) .department-fill { background: linear-gradient(90deg,#bf3159,#ed9aaf); }
+    .department-row:nth-child(3) .department-fill { background: linear-gradient(90deg,#8e1d3d,#d7607e); }
+    .department-row:nth-child(4) .department-fill { background: linear-gradient(90deg,#d44b6d,#f0a6b8); }
+    .department-row strong { text-align: right; color: #405b68; font-size: 9px; }
+    .doctor-row { display: flex; align-items: center; gap: 9px; }
+    .doctor-avatar { width: 30px; height: 30px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 10px; background: var(--teal-soft); font-size: 15px; }
+    .doctor-info { min-width: 0; flex: 1; }
+    .doctor-info strong { display: block; overflow: hidden; color: #405966; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .doctor-info small { display: block; margin-top: 3px; color: #8d9ca5; font-size: 9px; }
+    .on-duty-dot { width: 7px; height: 7px; border-radius: 50%; background: #54b77b; box-shadow: 0 0 0 3px #e9f6ee; }
+    .photo-gallery { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; padding: 0 16px 16px; }
+    .space-card { position: relative; min-width: 0; height: 158px; overflow: hidden; border: 1px solid #f0e2e5; border-radius: 12px; background: linear-gradient(145deg,#8d2545,#4e1931); isolation: isolate; }
+    .space-card img { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease; }
+    .space-card:hover img { transform: scale(1.055); }
+    .space-card::after { position: absolute; z-index: -1; inset: 0; background: linear-gradient(0deg,rgba(49,12,27,.88) 0%,rgba(49,12,27,.28) 48%,rgba(49,12,27,.04) 100%); content: ""; }
+    .space-fallback { position: absolute; z-index: -2; inset: 0; display: grid; place-items: center; color: #fff; font-size: 40px; }
+    .space-caption { position: absolute; right: 11px; bottom: 11px; left: 11px; color: #fff; }
+    .space-caption strong { display: block; font-size: 11px; font-weight: 700; }
+    .space-caption small { display: block; margin-top: 4px; color: rgba(255,255,255,.82); font-size: 8px; }
+    .bed-panel { padding-bottom: 16px; }
+    .bed-summary { display: flex; align-items: baseline; gap: 6px; padding: 0 17px; }
+    .bed-summary strong { color: #274454; font-size: 24px; letter-spacing: -.04em; }
+    .bed-summary span { color: #8b9ba4; font-size: 10px; }
+    .bed-bar { height: 9px; display: flex; overflow: hidden; margin: 13px 17px 12px; border-radius: 8px; background: #edf1f3; }
+    .bed-occupied { background: #b51e48; }
+    .bed-reserved { background: #e6b862; }
+    .bed-legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 0 17px; color: #758791; font-size: 9px; }
+    .bed-legend span { display: inline-flex; align-items: center; gap: 5px; }
+    .bed-legend i { width: 7px; height: 7px; border-radius: 2px; background: #b51e48; }
+    .bed-legend .reserved-dot { background: #e6b862; }
+    .bed-legend .available-dot { background: #edf1f3; }
+    .alert-list { padding: 0 17px 10px; }
+    .alert-row { display: flex; align-items: flex-start; gap: 9px; padding: 9px 0; border-top: 1px solid #f0f3f5; }
+    .alert-symbol { width: 24px; height: 24px; display: grid; flex: 0 0 auto; place-items: center; border-radius: 7px; background: var(--amber-soft); color: var(--amber); font-size: 11px; }
+    .alert-row strong { display: block; color: #455e6b; font-size: 9px; font-weight: 600; line-height: 1.5; }
+    .alert-row small { display: block; margin-top: 3px; color: #91a0a9; font-size: 9px; }
+    .table-panel { overflow: hidden; }
+    .table-tools { display: flex; align-items: center; gap: 8px; }
+    .filter-select { height: 32px; padding: 0 8px; border: 1px solid var(--line); border-radius: 7px; background: #fff; color: #5d707b; font-size: 10px; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    thead { background: #f8fafb; }
+    th { padding: 10px 13px; border-top: 1px solid #edf1f3; border-bottom: 1px solid #edf1f3; color: #82919a; font-size: 9px; font-weight: 600; white-space: nowrap; }
+    td { padding: 11px 13px; border-bottom: 1px solid #eff2f4; color: #536875; font-size: 10px; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fbfdfd; }
+    .person-cell strong { display: block; color: #304957; font-size: 10px; font-weight: 600; }
+    .person-cell small { display: block; margin-top: 3px; color: #93a0a8; font-size: 9px; }
+    .row-actions { display: flex; justify-content: flex-end; gap: 5px; }
+    .mini-button { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 6px; background: transparent; color: #6a7d87; }
+    .mini-button:hover { border-color: var(--line); background: #fff; color: var(--teal); }
+    .empty-state { padding: 34px 14px; color: #84949d; text-align: center; font-size: 11px; }
+    .empty-state strong { display: block; margin-bottom: 5px; color: #506773; font-size: 12px; }
+    .table-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; border-top: 1px solid #edf1f3; color: #8b9aa3; font-size: 9px; }
+    .quick-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 10px; margin-top: 15px; }
+    .quick-action { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid var(--line); border-radius: 9px; background: #fff; color: #3d5867; text-align: left; font-size: 10px; font-weight: 600; }
+    .quick-action:hover { border-color: #c1d9d9; background: #f8fcfb; }
+    .quick-action span:first-child { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: var(--teal-soft); color: var(--teal); font-size: 13px; }
+    .modal-backdrop { position: fixed; z-index: 50; inset: 0; display: grid; place-items: center; padding: 18px; background: rgba(14,32,43,.44); }
+    .modal { width: min(510px,100%); max-height: min(760px,92vh); overflow-y: auto; border: 1px solid rgba(255,255,255,.7); border-radius: 14px; background: #fff; box-shadow: 0 24px 70px rgba(15,35,48,.25); }
+    .modal-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 20px 21px 14px; border-bottom: 1px solid var(--line); }
+    .modal-header h2 { margin: 0; color: #213d4c; font-size: 16px; letter-spacing: -.03em; }
+    .modal-header p { margin: 5px 0 0; color: #82929b; font-size: 10px; line-height: 1.5; }
+    .modal-body { padding: 17px 21px 20px; }
+    .form-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; }
+    .field { display: grid; gap: 6px; }
+    .field.full { grid-column: 1/-1; }
+    .field label { color: #526975; font-size: 10px; font-weight: 600; }
+    .field input, .field select, .field textarea { width: 100%; min-height: 36px; padding: 8px 10px; border: 1px solid #dfe7ea; border-radius: 7px; outline: none; background: #fff; color: #304957; font-size: 11px; }
+    .field textarea { min-height: 70px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: #64aaa6; box-shadow: 0 0 0 3px rgba(22,124,121,.1); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; padding-top: 16px; }
+    .toast { position: fixed; z-index: 70; right: 22px; bottom: 20px; max-width: min(380px,calc(100% - 44px)); padding: 12px 16px; border: 1px solid #cfe5df; border-radius: 9px; background: #f1fbf7; box-shadow: var(--shadow); color: #28664d; font-size: 11px; }
+    .toast.error { border-color: #f1d0cc; background: #fff6f4; color: #9e4742; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    :focus-visible { outline: 3px solid rgba(39,142,137,.52); outline-offset: 2px; }
+    @media (max-width: 1080px) {
+      .sidebar { width: 220px; }
+      .main { margin-left: 220px; }
+      .content { padding-inline: 23px; }
+      .topbar { padding-inline: 23px; }
+      .metrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+      .metrics.four-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      .sidebar { width: 255px; transform: translateX(-105%); box-shadow: 14px 0 35px rgba(12,31,44,.16); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-close { display: grid; }
+      .main { margin-left: 0; }
+      .topbar { min-height: 61px; padding-inline: 14px; }
+      .mobile-toggle { display: grid; }
+      .crumb { display: none; }
+      .global-search { width: min(290px,42vw); }
+      .role-select { max-width: 118px; }
+      .content { padding: 22px 14px 35px; }
+      .dashboard-grid,.lower-grid { grid-template-columns: 1fr; }
+      .widget-grid { grid-template-columns: 1fr; }
+      .metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .photo-gallery { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .metrics.four-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 480px) {
+      .top-actions { gap: 7px; }
+      .global-search { width: min(190px,42vw); height: 34px; }
+      .role-select { max-width: 91px; height: 34px; font-size: 9px; }
+      .topbar .icon-button { width: 33px; height: 33px; }
+      .page-heading { align-items: flex-start; flex-direction: column; }
+      .heading-actions { width: 100%; }
+      .heading-actions .button { flex: 1; }
+      .metrics { gap: 8px; }
+      .metric { min-height: 105px; padding: 12px; }
+      .metric-value { font-size: 24px; }
+      .metric-note { font-size: 8px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .page-heading h1 { font-size: 21px; }
+      .dashboard-heading { padding: 17px 15px; }
+      .dashboard-heading h1 { font-size: 22px; }
+      .quick-grid { gap: 7px; }
+      .quick-action { padding: 9px; font-size: 9px; }
+      .photo-gallery { gap: 8px; padding-inline: 10px; }
+      .space-card { height: 132px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <a class="brand" href="#" data-page="dashboard" aria-label="Kishlay Multispeciality Hospital home">
+        <span class="brand-mark" aria-hidden="true">+</span>
+        <span><strong>Kishlay</strong><small>Multispeciality Hospital</small></span>
+      </a>
+      <button class="sidebar-close" id="sidebar-close" aria-label="Close navigation">×</button>
+      <div class="hospital-select"><small>Facility · Demo only</small><strong>Kishlay Multispeciality Hospital <span aria-hidden="true">⌄</span></strong><small style="margin:6px 0 0;text-transform:none;letter-spacing:0">Northfield</small></div>
+      <div class="nav-label">Workspace</div>
+      <nav class="nav-list" id="navigation">
+        <button class="nav-item active" data-page="dashboard" data-roles="Administrator,Doctor,Nurse,Receptionist,Pharmacist,Laboratory Technician,Accountant,HR Manager"><span class="nav-icon">▦</span>Overview</button>
+        <button class="nav-item" data-page="patients" data-roles="Administrator,Doctor,Nurse,Receptionist"><span class="nav-icon">♙</span>Patients <span class="nav-count" id="patient-count">0</span></button>
+        <button class="nav-item" data-page="appointments" data-roles="Administrator,Doctor,Nurse,Receptionist"><span class="nav-icon">▣</span>Appointments</button>
+        <button class="nav-item" data-page="admissions" data-roles="Administrator,Doctor,Nurse"><span class="nav-icon">⌂</span>Admissions &amp; beds</button>
+        <button class="nav-item" data-page="laboratory" data-roles="Administrator,Doctor,Nurse,Laboratory Technician"><span class="nav-icon">⚗</span>Laboratory</button>
+        <button class="nav-item" data-page="pharmacy" data-roles="Administrator,Doctor,Pharmacist"><span class="nav-icon">✚</span>Pharmacy &amp; stock</button>
+        <button class="nav-item" data-page="billing" data-roles="Administrator,Receptionist,Accountant"><span class="nav-icon">＄</span>Billing &amp; claims</button>
+        <button class="nav-item" data-page="staff" data-roles="Administrator,HR Manager"><span class="nav-icon">♧</span>Staff &amp; shifts</button>
+        <button class="nav-item" data-page="reports" data-roles="Administrator,Accountant,HR Manager"><span class="nav-icon">▤</span>Reports</button>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="demo-card"><strong><span class="demo-dot"></span>Sandbox environment</strong><p>All records are fictional demo data stored only in this browser. Integrations and transactions are simulated.</p></div>
+      <div class="side-user"><span class="avatar">KH</span><span><strong>Hospital Team</strong><small id="sidebar-role">Hospital Administrator · Demo</small></span></div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="top-left">
+          <button class="icon-button mobile-toggle" id="menu-toggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+          <div class="crumb">Kishlay Multispeciality Hospital · Northfield <span aria-hidden="true">/</span> <b id="breadcrumb">Overview</b></div>
+        </div>
+        <div class="top-actions">
+          <label class="global-search" aria-label="Search patients"><span aria-hidden="true">⌕</span><input id="global-search" type="search" placeholder="Search demo patients…" autocomplete="off"></label>
+          <button class="icon-button" id="notifications-button" aria-label="Show notifications" title="Notifications">♧<span class="notification-dot"></span></button>
+          <label class="sr-only" for="role-select">Preview role dashboard</label>
+          <select class="role-select" id="role-select" title="Preview role-specific access">
+            <option>Administrator</option><option>Doctor</option><option>Nurse</option><option>Receptionist</option><option>Pharmacist</option><option>Laboratory Technician</option><option>Accountant</option><option>HR Manager</option>
+          </select>
+        </div>
+      </header>
+      <section class="content" id="content" aria-live="polite"></section>
+    </main>
+  </div>
+  <div id="overlay-root"></div>
+  <div id="toast-root" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    "use strict";
+    const STORAGE_KEY = "careflow-hms-demo-v1";
+    const SEED_VERSION_KEY = "careflow-hms-seed-version";
+    const demoData = {
+      patients: [
+        { id: "PT-2048", name: "Maya Chen", age: "34", gender: "Female", complaint: "Routine cardiology follow-up", phone: "(555) 010-2048", department: "Cardiology", status: "Active", lastVisit: "2026-10-28" },
+        { id: "PT-2047", name: "Noah Williams", age: "58", gender: "Male", complaint: "Knee pain after exercise", phone: "(555) 010-2047", department: "Orthopedics", status: "Active", lastVisit: "2026-10-28" },
+        { id: "PT-2046", name: "Ava Patel", age: "26", gender: "Female", complaint: "Annual wellness check", phone: "(555) 010-2046", department: "Pediatrics", status: "Active", lastVisit: "2026-10-27" },
+        { id: "PT-2045", name: "Oliver Garcia", age: "71", gender: "Male", complaint: "Follow-up consultation", phone: "(555) 010-2045", department: "Internal Medicine", status: "Active", lastVisit: "2026-10-27" },
+        { id: "PT-2044", name: "Isabella Kim", age: "43", gender: "Female", complaint: "Headache consultation", phone: "(555) 010-2044", department: "Neurology", status: "Active", lastVisit: "2026-10-26" },
+        { id: "PT-2043", name: "Ethan Brown", age: "39", gender: "Male", complaint: "Routine heart health review", phone: "(555) 010-2043", department: "Cardiology", status: "Active", lastVisit: "2026-10-25" }
+      ],
+      appointments: [
+        { id: "AP-7512", patient: "Maya Chen", doctor: "Dr. Elena Ruiz", department: "Cardiology", time: "09:00", type: "Follow-up", status: "Confirmed" },
+        { id: "AP-7513", patient: "Noah Williams", doctor: "Dr. Marcus Lee", department: "Orthopedics", time: "09:30", type: "Consultation", status: "Waiting" },
+        { id: "AP-7514", patient: "Ava Patel", doctor: "Dr. Priya Shah", department: "Pediatrics", time: "10:15", type: "Check-up", status: "Scheduled" },
+        { id: "AP-7515", patient: "Oliver Garcia", doctor: "Dr. Elena Ruiz", department: "Internal Medicine", time: "11:00", type: "Follow-up", status: "Confirmed" },
+        { id: "AP-7516", patient: "Isabella Kim", doctor: "Dr. James Park", department: "Neurology", time: "11:30", type: "Consultation", status: "Scheduled" }
+      ],
+      admissions: [
+        { id: "AD-0361", patient: "Oliver Garcia", ward: "North · 3", bed: "N3-12", admitted: "2026-10-26", attending: "Dr. Elena Ruiz", status: "Admitted" },
+        { id: "AD-0362", patient: "Ethan Brown", ward: "East · 2", bed: "E2-08", admitted: "2026-10-27", attending: "Dr. Marcus Lee", status: "Admitted" },
+        { id: "AD-0363", patient: "Maya Chen", ward: "South · 1", bed: "S1-04", admitted: "2026-10-28", attending: "Dr. Elena Ruiz", status: "Reserved" }
+      ],
+      laboratory: [
+        { id: "LB-8820", patient: "Maya Chen", test: "Complete blood count", ordered: "08:12", priority: "Routine", status: "In progress" },
+        { id: "LB-8819", patient: "Oliver Garcia", test: "Metabolic panel", ordered: "07:46", priority: "Urgent", status: "Pending" },
+        { id: "LB-8818", patient: "Ava Patel", test: "Vitamin D", ordered: "Yesterday", priority: "Routine", status: "Completed" }
+      ],
+      pharmacy: [
+        { id: "RX-3011", medicine: "Amoxicillin · 500 mg", category: "Antibiotic", stock: "24", reorder: "40", expiry: "2027-06", status: "Low stock" },
+        { id: "RX-3012", medicine: "Lisinopril · 10 mg", category: "Cardiovascular", stock: "186", reorder: "50", expiry: "2027-09", status: "In stock" },
+        { id: "RX-3013", medicine: "Metformin · 500 mg", category: "Diabetes care", stock: "92", reorder: "35", expiry: "2027-04", status: "In stock" },
+        { id: "RX-3014", medicine: "Salbutamol inhaler", category: "Respiratory", stock: "8", reorder: "20", expiry: "2027-02", status: "Low stock" }
+      ],
+      billing: [
+        { id: "BL-6401", patient: "Maya Chen", invoice: "INV-2026-6401", amount: "280.00", due: "2026-11-12", status: "Pending" },
+        { id: "BL-6400", patient: "Noah Williams", invoice: "INV-2026-6400", amount: "165.00", due: "2026-11-10", status: "Paid" },
+        { id: "BL-6399", patient: "Oliver Garcia", invoice: "INV-2026-6399", amount: "1,240.00", due: "2026-10-30", status: "Due" }
+      ],
+      staff: [
+        { id: "ST-0101", name: "Dr. Elena Ruiz", role: "Cardiologist", department: "Cardiology", shift: "07:00–15:00", status: "On duty" },
+        { id: "ST-0102", name: "Dr. Marcus Lee", role: "Orthopedic surgeon", department: "Orthopedics", shift: "08:00–16:00", status: "On duty" },
+        { id: "ST-0103", name: "Priya Nair", role: "Registered nurse", department: "North ward", shift: "07:00–19:00", status: "On duty" },
+        { id: "ST-0104", name: "Jordan Ellis", role: "Lab technician", department: "Laboratory", shift: "09:00–17:00", status: "Available" }
+      ]
+    };
+    function isDoctorRole(role) {
+      return /doctor|surgeon|physician|cardiologist|pediatrician|neurologist|oncologist/i.test(role || "");
+    }
+    function expandDemoData(data) {
+      const departments = ["Cardiology","Orthopedics","Pediatrics","Internal Medicine","Neurology","Oncology","Emergency"];
+      const complaints = ["Routine health review","Follow-up consultation","General wellness check","Symptoms review","Specialist consultation","Preventive care visit"];
+      const fillPatients = [
+        "Aarav Sharma","Diya Kumar","Rohan Mehta","Anaya Singh","Kabir Das","Meera Iyer",
+        "Arjun Rao","Ishita Nair","Vihaan Gupta","Sara Thomas","Reyansh Shah","Kiara Reddy",
+        "Aditya Verma","Myra Joshi","Dev Malhotra","Anika Bose","Neil Fernandes","Tara Kapoor",
+        "Ishan Pillai","Sana Khan","Krish Menon","Nisha Kulkarni","Samir Roy","Leela Das"
+      ];
+      while (data.patients.length < 30) {
+        const index = data.patients.length;
+        const name = fillPatients[index - 6] || `Sample Patient ${String(index + 1).padStart(2,"0")}`;
+        data.patients.push({
+          id: makeId("PT",data.patients), name, age: String(19 + (index * 7) % 66),
+          gender: ["Female","Male","Non-binary","Prefer not to say"][index % 4],
+          complaint: complaints[index % complaints.length], phone: `(555) 010-${String(2100 + index).slice(-4)}`,
+          department: departments[index % departments.length], status: "Active", lastVisit: today()
+        });
+      }
+      const doctors = data.staff.filter((person)=>isDoctorRole(person.role));
+      const doctorNames = ["Dr. Priya Shah","Dr. James Park","Dr. Aisha Rahman","Dr. Vikram Rao","Dr. Sofia Martin","Dr. Daniel Brooks","Dr. Neha Kapoor","Dr. Arjun Nair","Dr. Grace Wilson","Dr. Rohan Mehta"];
+      const doctorRoles = ["Pediatrician","Neurologist","Oncologist","Physician","Surgeon","Cardiologist","Orthopedic surgeon"];
+      while (doctors.length < 12) {
+        const index = doctors.length;
+        const person = {
+          id: makeId("ST",data.staff), name: doctorNames[index] || `Dr. Demo Clinician ${index + 1}`,
+          role: doctorRoles[index % doctorRoles.length], department: departments[index % departments.length],
+          shift: index % 2 ? "09:00–17:00" : "08:00–16:00", status: index < 9 ? "On duty" : "Available"
+        };
+        data.staff.push(person);
+        doctors.push(person);
+      }
+      const staffNames = ["Amara Joseph","Kiran Rao","Fatima Ali","Ritika Sen","Dev Patel","Mohan Das","Sonal Mehta","Anil Kumar","Pooja Nair","Harish Shah","Ira Bose","Manoj Reddy"];
+      const staffRoles = ["Registered nurse","Ward nurse","Lab technician","Radiology technician","Pharmacist","Receptionist","Accountant","Patient coordinator"];
+      while (data.staff.length < 24) {
+        const index = data.staff.length - 12;
+        data.staff.push({
+          id: makeId("ST",data.staff), name: staffNames[index] || `Demo Staff Member ${index + 1}`,
+          role: staffRoles[index % staffRoles.length], department: departments[index % departments.length],
+          shift: index % 2 ? "09:00–17:00" : "08:00–16:00", status: index < 6 ? "On duty" : "Available"
+        });
+      }
+      const timeSlots = ["08:30","09:00","09:30","10:00","10:30","11:00","11:30","12:00","13:00","13:30","14:00","14:30","15:00","15:30","16:00"];
+      while (data.appointments.length < 20) {
+        const index = data.appointments.length;
+        const patient = data.patients[index % data.patients.length];
+        const doctor = data.staff.filter((person)=>isDoctorRole(person.role))[index % doctors.length];
+        data.appointments.push({
+          id: makeId("AP",data.appointments), patient: patient.name, doctor: doctor.name,
+          department: doctor.department, time: timeSlots[index % timeSlots.length],
+          type: ["Consultation","Follow-up","Check-up"][index % 3],
+          status: ["Scheduled","Confirmed","Waiting"][index % 3]
+        });
+      }
+      while (data.admissions.length < 14) {
+        const index = data.admissions.length;
+        const patient = data.patients[(index + 3) % data.patients.length];
+        const doctor = doctors[index % doctors.length];
+        data.admissions.push({
+          id: makeId("AD",data.admissions), patient: patient.name,
+          ward: ["North · 2","East · 3","South · 1","West · 2"][index % 4],
+          bed: `B${Math.floor(index / 4) + 1}-${String(index + 1).padStart(2,"0")}`,
+          admitted: today(), attending: doctor.name, status: index % 5 === 0 ? "Reserved" : "Admitted"
+        });
+      }
+      const tests = ["Complete blood count","Metabolic panel","Thyroid function","Lipid profile","Vitamin D","Blood glucose","Urinalysis"];
+      while (data.laboratory.length < 15) {
+        const index = data.laboratory.length;
+        data.laboratory.push({
+          id: makeId("LB",data.laboratory), patient: data.patients[index % data.patients.length].name,
+          test: tests[index % tests.length], ordered: `${String(8 + index % 8).padStart(2,"0")}:${index % 2 ? "30" : "00"}`,
+          priority: index % 6 === 0 ? "Urgent" : "Routine",
+          status: ["Pending","In progress","Completed"][index % 3]
+        });
+      }
+      const medicines = ["Cetirizine · 10 mg","Atorvastatin · 20 mg","Omeprazole · 20 mg","Paracetamol · 500 mg","Amlodipine · 5 mg","Vitamin D · 1000 IU","Ibuprofen · 200 mg","Losartan · 50 mg","Insulin · 100 units","Azithromycin · 250 mg","Oral rehydration salts"];
+      while (data.pharmacy.length < 15) {
+        const index = data.pharmacy.length;
+        const stock = 35 + (index * 17) % 140;
+        data.pharmacy.push({
+          id: makeId("RX",data.pharmacy), medicine: medicines[index - 4] || `Demo medicine ${index + 1}`,
+          category: ["General care","Cardiovascular","Pain relief","Respiratory"][index % 4],
+          stock: String(stock), reorder: "30", expiry: "2027-12", status: stock < 45 ? "Low stock" : "In stock"
+        });
+      }
+      while (data.billing.length < 16) {
+        const index = data.billing.length;
+        data.billing.push({
+          id: makeId("BL",data.billing), patient: data.patients[index % data.patients.length].name,
+          invoice: `INV-2026-${6500 + index}`, amount: (120 + index * 45).toFixed(2),
+          due: "2026-11-20", status: ["Pending","Paid","Due","Overdue"][index % 4]
+        });
+      }
+      return data;
+    }
+    const modules = {
+      patients: { title: "Patients", subtitle: "Fictional demo directory. Avoid entering real patient or health information.", singular: "patient", columns: [["name","Patient"],["id","Patient ID"],["age","Age"],["gender","Gender"],["complaint","Chief complaint"],["phone","Phone"],["department","Department"],["lastVisit","Last visit"],["status","Status"]], fields: [["name","Full name","text",true],["age","Age","number",true],["gender","Gender","select",true,["Female","Male","Non-binary","Prefer not to say"]],["complaint","Chief complaint","textarea",true],["phone","Phone","tel",true],["department","Department","select",true,["Cardiology","Internal Medicine","Neurology","Oncology","Orthopedics","Pediatrics","Emergency"]],["status","Status","select",true,["Active","Inactive"]]], search:["name","id","department","phone","complaint"], role:"Administrator" },
+      appointments: { title: "Appointments", subtitle: "Create and manage the simulated outpatient schedule.", singular: "appointment", columns: [["time","Time"],["patient","Patient"],["doctor","Clinician"],["department","Department"],["type","Visit type"],["status","Status"]], fields: [["patient","Patient name","text",true],["doctor","Clinician","text",true],["department","Department","select",true,["Cardiology","Internal Medicine","Neurology","Oncology","Orthopedics","Pediatrics","Emergency"]],["time","Time","time",true],["type","Visit type","select",true,["Consultation","Follow-up","Check-up","Procedure"]],["status","Status","select",true,["Scheduled","Confirmed","Waiting","Completed","Cancelled"]]], search:["patient","doctor","department","id"], role:"Receptionist" },
+      admissions: { title: "Admissions & beds", subtitle: "Track simulated inpatient stays and bed assignments.", singular: "admission", columns: [["patient","Patient"],["id","Admission ID"],["ward","Ward"],["bed","Bed"],["admitted","Admitted"],["attending","Attending clinician"],["status","Status"]], fields: [["patient","Patient name","text",true],["ward","Ward","text",true],["bed","Bed","text",true],["admitted","Admission date","date",true],["attending","Attending clinician","text",true],["status","Status","select",true,["Admitted","Reserved","Discharged"]]], search:["patient","id","ward","bed","attending"], role:"Nurse" },
+      laboratory: { title: "Laboratory", subtitle: "Manage simulated test orders and workflow status.", singular: "lab order", columns: [["patient","Patient"],["id","Order ID"],["test","Test"],["ordered","Ordered"],["priority","Priority"],["status","Status"]], fields: [["patient","Patient name","text",true],["test","Test name","text",true],["ordered","Order time","text",true],["priority","Priority","select",true,["Routine","Urgent","Critical"]],["status","Status","select",true,["Pending","In progress","Completed"]]], search:["patient","id","test","priority"], role:"Laboratory Technician" },
+      pharmacy: { title: "Pharmacy & stock", subtitle: "Review demo inventory levels; no real medication dispensing occurs.", singular: "inventory item", columns: [["medicine","Medicine"],["id","Stock ID"],["category","Category"],["stock","On hand"],["reorder","Reorder at"],["expiry","Expiry"],["status","Stock status"]], fields: [["medicine","Medicine","text",true],["category","Category","text",true],["stock","Units on hand","number",true],["reorder","Reorder threshold","number",true],["expiry","Expiry (YYYY-MM)","month",true],["status","Stock status","select",true,["In stock","Low stock","Unavailable"]]], search:["medicine","id","category"], role:"Pharmacist" },
+      billing: { title: "Billing & claims", subtitle: "Simulated invoices only. No payments, claims, or insurer connections are processed.", singular: "invoice", columns: [["patient","Patient"],["id","Record ID"],["invoice","Invoice"],["amount","Amount · USD"],["due","Due date"],["status","Status"]], fields: [["patient","Patient name","text",true],["invoice","Invoice number","text",true],["amount","Amount (USD)","number",true],["due","Due date","date",true],["status","Status","select",true,["Pending","Due","Paid","Overdue"]]], search:["patient","id","invoice","status"], role:"Accountant" },
+      staff: { title: "Staff & shifts", subtitle: "Fictional staff and shift planning for the demo facility.", singular: "staff member", columns: [["name","Staff member"],["id","Staff ID"],["role","Role"],["department","Department"],["shift","Shift"],["status","Availability"]], fields: [["name","Full name","text",true],["role","Role","text",true],["department","Department","text",true],["shift","Shift","text",true],["status","Status","select",true,["On duty","Available","Off duty"]]], search:["name","id","role","department"], role:"HR Manager" }
+    };
+    const rolePage = {
+      Administrator: "A clear view of today’s hospital operations.",
+      Doctor: "Care team snapshot · sample records only.",
+      Nurse: "Ward and patient flow · sample records only.",
+      Receptionist: "Patient access and today’s schedule · demo data.",
+      Pharmacist: "Medication stock snapshot · simulated inventory.",
+      "Laboratory Technician": "Lab workflow snapshot · fictional orders.",
+      Accountant: "Revenue and invoice snapshot · simulated amounts.",
+      "HR Manager": "Staffing snapshot · fictional staff directory."
+    };
+    let state = loadState();
+    let currentPage = "dashboard";
+    let activeFilter = "all";
+    let searchQuery = "";
+    let toastTimer;
+    const content = document.getElementById("content");
+    const overlayRoot = document.getElementById("overlay-root");
+    const toastRoot = document.getElementById("toast-root");
+    const roleSelect = document.getElementById("role-select");
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      const parsed = saved ? JSON.parse(saved) : structuredClone(demoData);
+      for (const key of Object.keys(demoData)) {
+        if (!Array.isArray(parsed[key])) throw new Error("Saved demo data is invalid. Use Reset demo data to restore the sample workspace.");
+      }
+      if (localStorage.getItem(SEED_VERSION_KEY) !== "2") {
+        expandDemoData(parsed);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        localStorage.setItem(SEED_VERSION_KEY, "2");
+      }
+      return parsed;
+    }
+    function persist() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    function escapeHTML(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[char]);
+    }
+    function prettyStatus(value) { return String(value || "").toLowerCase().replace(/\s+/g,"-"); }
+    function statusHTML(value) { return `<span class="status ${escapeHTML(prettyStatus(value))}">${escapeHTML(value)}</span>`; }
+    function today() { return new Date().toISOString().slice(0,10); }
+    function makeId(prefix, rows) {
+      const next = Math.max(0, ...rows.map((row) => Number((row.id.match(/\d+$/) || [0])[0]))) + 1;
+      return `${prefix}-${String(next).padStart(4,"0")}`;
+    }
+    function showToast(message, error = false) {
+      clearTimeout(toastTimer);
+      toastRoot.innerHTML = `<div class="toast${error ? " error" : ""}" role="status">${escapeHTML(message)}</div>`;
+      toastTimer = setTimeout(() => { toastRoot.innerHTML = ""; }, 3400);
+    }
+    function metricsForRole() {
+      const total = state.patients.length;
+      const scheduled = state.appointments.filter((item) => item.status !== "Cancelled").length;
+      const waiting = state.appointments.filter((item) => item.status === "Waiting").length;
+      const admitted = state.admissions.filter((item) => item.status === "Admitted").length;
+      const lowStock = state.pharmacy.filter((item) => item.status === "Low stock").length;
+      const pendingLabs = state.laboratory.filter((item) => item.status !== "Completed").length;
+      const paid = state.billing.filter((item) => item.status === "Paid").length;
+      const activeStaff = state.staff.filter((item) => item.status === "On duty").length;
+      const reservedBeds = state.admissions.filter((item) => item.status === "Reserved").length;
+      const admissionsToday = state.admissions.filter((item) => item.admitted === today()).length;
+      const doctors = state.staff.filter((item) => isDoctorRole(item.role));
+      const doctorsOnDuty = doctors.filter((item) => item.status === "On duty").length;
+      const bedCapacity = 120;
+      const role = roleSelect.value;
+      const configs = {
+        Administrator: [["Registered patients",total,"Demo roster","fictional patient records","👥"],["Doctors",doctors.length,`${doctorsOnDuty} on duty`,"fictional care team","🩺"],["Appointments today",scheduled,"Scheduled / active","sample schedule","📅"],["Inpatients",admitted,"Sample ward census","fictional admissions","🛏️"],["Bed occupancy",`${Math.round(admitted/bedCapacity*100)}%`,`${bedCapacity-admitted-reservedBeds} beds available`,"illustrative capacity","🏥"]],
+        Doctor: [["My care list",total,"Demo roster","fictional patient records","👥"],["Today’s appointments",scheduled,"Sample schedule","simulated visits","📅"],["Waiting patients",waiting,"Sample queue","demo workflow only","⏳"],["Active admissions",admitted,"Inpatient care","fictional stays","🛏️"]],
+        Nurse: [["Patients in care",admitted,"Ward overview","sample inpatient census","👥"],["Appointments today",scheduled,"Across clinics","sample schedule","📅"],["Pending lab orders",pendingLabs,"Review queue","simulated tests","🧪"],["Available beds",bedCapacity-admitted-reservedBeds,`Of ${bedCapacity} beds`,"sample capacity","🛏️"]],
+        Receptionist: [["Registered patients",total,"Demo roster","fictional patient records","👥"],["Appointments today",scheduled,"Scheduled / active","sample schedule","📅"],["Waiting patients",waiting,"Sample queue","demo workflow only","⏳"],["Admissions today",admissionsToday,"Demo activity","simulated admissions","🏥"]],
+        Pharmacist: [["Catalog items",state.pharmacy.length,"Demo inventory","sample stock records","💊"],["Low stock alerts",lowStock,"Review reorder","simulated stock only","⚠️"],["On-duty team",activeStaff,"Sample shift records","fictional hospital staff","👩‍⚕️"],["Appointments",scheduled,"Across clinics","sample schedule","📅"]],
+        "Laboratory Technician": [["Pending orders",pendingLabs,"Lab queue","simulated orders","🧪"],["In progress",state.laboratory.filter((x)=>x.status==="In progress").length,"Bench workflow","sample records","⏳"],["Completed sample orders",state.laboratory.filter((x)=>x.status==="Completed").length,"Illustrative only","no real test results","✅"],["Appointments today",scheduled,"Referral activity","sample schedule","📅"]],
+        Accountant: [["Open invoices",state.billing.filter((x)=>x.status!=="Paid").length,"Action required","simulated billing","🧾"],["Paid invoices",paid,"Demo records","no payments processed","✅"],["Estimated revenue","$12,480","Illustrative only","not accounting data","💰"],["Appointments today",scheduled,"Operational context","sample schedule","📅"]],
+        "HR Manager": [["Staff members",state.staff.length,"Demo roster","fictional staff records","👩‍⚕️"],["Doctors",doctors.length,`${doctorsOnDuty} on duty`,"fictional care team","🩺"],["Departments",new Set(state.staff.map((x)=>x.department)).size,"Represented","demo workforce","🏥"],["Appointments today",scheduled,"Operational context","sample schedule","📅"]]
+      };
+      return configs[role] || configs.Administrator;
+    }
+    function renderMetrics() {
+      const metrics=metricsForRole();
+      return `<section class="metrics${metrics.length===4?" four-metrics":""}" aria-label="Key performance indicators">${metrics.map(([label,value,trend,note,icon])=>`<article class="metric"><div class="metric-top"><span>${escapeHTML(label)}</span><span class="metric-icon" aria-hidden="true">${escapeHTML(icon)}</span></div><div class="metric-bottom"><strong class="metric-value">${escapeHTML(value)}</strong><span class="metric-trend">${escapeHTML(trend)}</span></div><div class="metric-note">${escapeHTML(note)}</div></article>`).join("")}</section>`;
+    }
+    function chartMarkup() {
+      const values = [42,58,47,70,62,81,57];
+      const labels = ["Thu","Fri","Sat","Sun","Mon","Tue","Wed"];
+      const chartBars = values.map((value,index) => {
+        const x = 56 + index * 56;
+        const height = value * 1.43;
+        return `<rect class="chart-bar${index===6?" highlight":""}" x="${x}" y="${160-height}" width="27" height="${height}" rx="5"><title>${labels[index]}: ${Math.round(value*1.6)} visits (illustrative)</title></rect><text class="chart-label" x="${x+13.5}" y="178" text-anchor="middle">${labels[index]}</text>`;
+      }).join("");
+      return `<svg viewBox="0 0 470 190" role="img" aria-label="Illustrative outpatient visit activity for the past seven days"><line class="chart-gridline" x1="38" y1="30" x2="450" y2="30"/><line class="chart-gridline" x1="38" y1="72" x2="450" y2="72"/><line class="chart-gridline" x1="38" y1="114" x2="450" y2="114"/><line class="chart-gridline" x1="38" y1="156" x2="450" y2="156"/><text class="chart-label" x="30" y="33" text-anchor="end">100</text><text class="chart-label" x="30" y="75" text-anchor="end">75</text><text class="chart-label" x="30" y="117" text-anchor="end">50</text><text class="chart-label" x="30" y="159" text-anchor="end">25</text>${chartBars}</svg>`;
+    }
+    function dashboardMarkup() {
+      const role = roleSelect.value;
+      const appointments = [...state.appointments].filter((item)=>item.status!=="Cancelled").sort((a,b)=>a.time.localeCompare(b.time)).slice(0,4);
+      const occupied = state.admissions.filter((item)=>item.status==="Admitted").length;
+      const reserved = state.admissions.filter((item)=>item.status==="Reserved").length;
+      const lowStock = state.pharmacy.filter((item)=>item.status==="Low stock");
+      const pendingLabs = state.laboratory.filter((item)=>item.status==="Pending");
+      const alerts = [
+        ...lowStock.map((item)=>({icon:"!",title:`${item.medicine} is below reorder level`,detail:`${item.stock} units on hand · ${item.reorder} reorder threshold`})),
+        ...pendingLabs.map((item)=>({icon:"⚗",title:`Pending lab order · ${item.test}`,detail:`${item.patient} · ${item.priority} priority`}))
+      ].slice(0,3);
+      const bedCapacity = 120;
+      const doctors = state.staff.filter((item)=>isDoctorRole(item.role));
+      const doctorsOnDuty = doctors.filter((item)=>item.status==="On duty");
+      const departmentNames = ["Cardiology","Orthopedics","Pediatrics","Internal Medicine"];
+      const departmentCounts = departmentNames.map((name)=>({name,count:state.appointments.filter((item)=>item.department===name).length}));
+      const departmentMax = Math.max(1,...departmentCounts.map((item)=>item.count));
+      const bedPct = Math.max(0,Math.min(100,(occupied/bedCapacity)*100));
+      const reservePct = Math.max(0,Math.min(100,(reserved/bedCapacity)*100));
+      return `<div class="page-heading dashboard-heading"><div><p class="welcome-kicker">✨ Kishlay Multispeciality Hospital · Northfield</p><h1>Good morning <span aria-hidden="true">☀️</span></h1><p>${escapeHTML(rolePage[role])}</p><span class="hospital-chip">💚 Care team workspace <span aria-hidden="true">·</span> 📍 Northfield</span></div><div class="heading-actions"><button class="button" data-action="export" data-export="appointments">📥 Export schedule</button><button class="button primary" data-action="add" data-module="appointments">＋ New appointment</button></div></div>
+        <div class="notice" role="note"><span aria-hidden="true">ⓘ</span><span><strong>Demo workspace only.</strong> Names and records are fictional. This local browser prototype is not a real medical record, secure clinical system, or connected payment, pharmacy, lab, or insurance service. Do not enter real health information.</span></div>
+        ${renderMetrics()}
+        <div class="dashboard-grid">
+          <section class="panel"><div class="panel-header"><div><h2>📈 Outpatient activity</h2><p>Illustrative visits · last seven days</p></div><div class="chart-legend"><i class="legend-dot"></i>Visits</div></div><div class="chart-wrap">${chartMarkup()}</div></section>
+          <section class="panel"><div class="panel-header"><div><h2>📅 Today’s appointments</h2><p>${state.appointments.length} sample appointments scheduled</p></div><button class="text-button" data-page="appointments">View schedule →</button></div><div class="appointment-list">${appointments.length?appointments.map((item)=>`<div class="appointment-row"><span class="appointment-time">${escapeHTML(item.time)}</span><span class="appointment-patient"><strong>${escapeHTML(item.patient)}</strong><small>${escapeHTML(item.doctor)} · ${escapeHTML(item.department)}</small></span>${statusHTML(item.status)}</div>`).join(""):`<div class="empty-state">No demo appointments to display.</div>`}</div></section>
+        </div>
+        <div class="lower-grid">
+          <section class="panel bed-panel"><div class="panel-header"><div><h2>🛏️ Bed occupancy</h2><p>Illustrative capacity · ${bedCapacity} sample beds</p></div><button class="text-button" data-page="admissions">Manage beds →</button></div><div class="bed-summary"><strong>${occupied}</strong><span>occupied · ${reserved} reserved · ${bedCapacity-occupied-reserved} available</span></div><div class="bed-bar" role="img" aria-label="${occupied} beds occupied, ${reserved} reserved, ${bedCapacity-occupied-reserved} available"><span class="bed-occupied" style="width:${bedPct}%"></span><span class="bed-reserved" style="width:${reservePct}%"></span></div><div class="bed-legend"><span><i></i>Occupied</span><span><i class="reserved-dot"></i>Reserved</span><span><i class="available-dot"></i>Available</span></div></section>
+          <section class="panel"><div class="panel-header"><div><h2>🔔 Needs attention</h2><p>Sample workflow reminders</p></div><button class="text-button" data-page="pharmacy">View all →</button></div><div class="alert-list">${alerts.length?alerts.map((item)=>`<div class="alert-row"><span class="alert-symbol" aria-hidden="true">${escapeHTML(item.icon)}</span><span><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.detail)}</small></span></div>`).join(""):`<div class="empty-state">No demo alerts right now.</div>`}</div></section>
+        </div>
+        <div class="widget-grid">
+          <section class="panel"><div class="panel-header"><div><h2>🏥 Department activity</h2><p>Appointments in the fictional demo schedule</p></div><button class="text-button" data-page="appointments">Open schedule →</button></div><div class="department-list">${departmentCounts.map((item)=>`<div class="department-row"><span>${escapeHTML(item.name)}</span><div class="department-track" aria-hidden="true"><div class="department-fill" style="width:${Math.max(8,Math.round(item.count/departmentMax*100))}%"></div></div><strong>${item.count}</strong></div>`).join("")}</div></section>
+          <section class="panel"><div class="panel-header"><div><h2>🩺 Doctors on duty</h2><p>${doctorsOnDuty.length} fictional clinicians · sample shift</p></div><button class="text-button" data-page="staff">View team →</button></div><div class="doctor-list">${doctorsOnDuty.slice(0,5).map((doctor)=>`<div class="doctor-row"><span class="doctor-avatar" aria-hidden="true">🩺</span><span class="doctor-info"><strong>${escapeHTML(doctor.name)}</strong><small>${escapeHTML(doctor.role)} · ${escapeHTML(doctor.department)}</small></span><i class="on-duty-dot" title="Sample on-duty status"></i></div>`).join("")}</div></section>
+        </div>
+        <section class="panel" style="margin-top:15px"><div class="panel-header"><div><h2>📸 Explore hospital spaces</h2><p>Illustrative healthcare photography · these are not photographs of Kishlay Hospital</p></div><span class="status">Visual tour</span></div><div class="photo-gallery">
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🏥</span><img src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative exterior of a modern hospital" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Hospital &amp; reception</strong><small>Illustrative hospital photo</small></div></article>
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🧪</span><img src="https://images.unsplash.com/photo-1579154204601-01588f351e67?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative clinical laboratory equipment" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Laboratory &amp; diagnostics</strong><small>Illustrative lab photo</small></div></article>
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🛏️</span><img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative hospital ward interior" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Patient ward</strong><small>Illustrative ward photo</small></div></article>
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🩻</span><img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative diagnostic imaging and clinical care" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Imaging &amp; diagnostics</strong><small>Illustrative imaging photo</small></div></article>
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🫀</span><img src="https://images.unsplash.com/photo-1584982751601-97dcc096659c?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative hospital monitoring equipment" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Care &amp; equipment</strong><small>Illustrative equipment photo</small></div></article>
+          <article class="space-card"><span class="space-fallback" aria-hidden="true">🩺</span><img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&amp;fit=crop&amp;w=700&amp;q=80" alt="Illustrative portrait of a healthcare professional" loading="lazy" onerror="this.style.display='none'"><div class="space-caption"><strong>Our care team</strong><small>Illustrative clinician photo</small></div></article>
+        </div></section>
+        <div class="quick-grid" aria-label="Quick actions">
+          <button class="quick-action" data-action="add" data-module="patients"><span>👤</span>Add demo patient</button>
+          <button class="quick-action" data-action="add" data-module="appointments"><span>📅</span>Schedule appointment</button>
+          <button class="quick-action" data-action="add" data-module="laboratory"><span>🧪</span>Create lab order</button>
+          <button class="quick-action" data-action="export" data-export="patients"><span>📥</span>Export patient list</button>
+        </div>`;
+    }
+    function filteredRows(key) {
+      const config = modules[key];
+      let rows = [...state[key]];
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        rows = rows.filter((row)=>config.search.some((field)=>String(row[field]||"").toLowerCase().includes(query)));
+      }
+      if (activeFilter !== "all" && key !== "patients") {
+        const field = key === "pharmacy" ? "status" : "status";
+        rows = rows.filter((row)=>prettyStatus(row[field])===activeFilter);
+      }
+      return rows;
+    }
+    function cellMarkup(field,value,row) {
+      if (field==="name" || field==="patient" || field==="medicine") {
+        const secondary = row.id ? `${row.id}${field==="patient"?" · demo record":""}` : "Demo record";
+        return `<div class="person-cell"><strong>${escapeHTML(value)}</strong><small>${escapeHTML(secondary)}</small></div>`;
+      }
+      if (field==="status") return statusHTML(value);
+      if (field==="amount") return `$${escapeHTML(value)}`;
+      return escapeHTML(value);
+    }
+    function tableMarkup(key) {
+      const config = modules[key], rows = filteredRows(key);
+      const heads = config.columns.map(([,label])=>`<th scope="col">${escapeHTML(label)}</th>`).join("");
+      const body = rows.length ? rows.map((row)=>`<tr>${config.columns.map(([field])=>`<td>${cellMarkup(field,row[field],row)}</td>`).join("")}<td><div class="row-actions"><button class="mini-button" data-action="edit" data-module="${key}" data-id="${escapeHTML(row.id)}" aria-label="Edit ${escapeHTML(config.singular)} ${escapeHTML(row.id)}" title="Edit">✎</button><button class="mini-button" data-action="status" data-module="${key}" data-id="${escapeHTML(row.id)}" aria-label="Update status for ${escapeHTML(row.id)}" title="Update status">↻</button><button class="mini-button" data-action="delete" data-module="${key}" data-id="${escapeHTML(row.id)}" aria-label="Remove demo ${escapeHTML(config.singular)} ${escapeHTML(row.id)}" title="Remove demo record">×</button></div></td></tr>`).join("") : `<tr><td colspan="${config.columns.length+1}"><div class="empty-state"><strong>${searchQuery||activeFilter!=="all"?"No matching demo records":"No demo records yet"}</strong>${searchQuery||activeFilter!=="all"?"Try a different search or filter.":"Add a fictional record to get started."}</div></td></tr>`;
+      return `<section class="panel table-panel"><div class="panel-header"><div><h2>${escapeHTML(config.title)} directory</h2><p>${rows.length} of ${state[key].length} fictional demo records</p></div><div class="table-tools">${statusOptions(key)?`<label class="sr-only" for="status-filter">Filter by status</label><select class="filter-select" id="status-filter"><option value="all">All statuses</option>${statusOptions(key).map((value)=>`<option value="${escapeHTML(prettyStatus(value))}" ${activeFilter===prettyStatus(value)?"selected":""}>${escapeHTML(value)}</option>`).join("")}</select>`:""}<button class="button" data-action="export" data-export="${key}">⇩ Export CSV</button><button class="button primary" data-action="add" data-module="${key}">＋ Add ${escapeHTML(config.singular)}</button></div></div><div class="table-scroll"><table><thead><tr>${heads}<th scope="col" style="text-align:right">Actions</th></tr></thead><tbody>${body}</tbody></table></div><div class="table-footer"><span>Demo data · browser-local only</span><span>Showing ${rows.length} record${rows.length===1?"":"s"}</span></div></section>`;
+    }
+    function statusOptions(key) {
+      const statuses = [...new Set(state[key].map((row)=>row.status).filter(Boolean))];
+      return statuses.length > 1 ? statuses : [];
+    }
+    function canAccess(page, role = roleSelect.value) {
+      if (page==="dashboard") return true;
+      if (page==="reports") return ["Administrator","Accountant","HR Manager"].includes(role);
+      const nav = document.querySelector(`.nav-item[data-page="${CSS.escape(page)}"]`);
+      return Boolean(nav && nav.dataset.roles.split(",").includes(role));
+    }
+    function moduleMarkup(key) {
+      const config = modules[key];
+      return `<div class="page-heading"><div><h1>${escapeHTML(config.title)}</h1><p>${escapeHTML(config.subtitle)}</p></div><div class="heading-actions"><button class="button" data-action="export" data-export="${key}">⇩ Export CSV</button><button class="button primary" data-action="add" data-module="${key}">＋ Add ${escapeHTML(config.singular)}</button></div></div><div class="notice" role="note"><span aria-hidden="true">ⓘ</span><span><strong>Fictional demo records.</strong> Do not add real patient identifiers, clinical notes, prescriptions, or payment information. Records are stored in this browser only.</span></div>${tableMarkup(key)}`;
+    }
+    function reportMarkup() {
+      const paid = state.billing.filter((row)=>row.status==="Paid").length;
+      const unpaid = state.billing.filter((row)=>row.status!=="Paid").length;
+      return `<div class="page-heading"><div><h1>Reports</h1><p>Small-sample operational summaries from the fictional demo records.</p></div><div class="heading-actions"><button class="button" data-action="export" data-export="patients">⇩ Patient CSV</button><button class="button" data-action="export" data-export="appointments">⇩ Schedule CSV</button></div></div><div class="notice" role="note"><span>ⓘ</span><span><strong>Illustrative only.</strong> These counts are not clinical, financial, or regulatory reports and must not be used for operational decisions.</span></div>${renderMetrics()}<div class="lower-grid"><section class="panel"><div class="panel-header"><div><h2>Workflow snapshot</h2><p>Counts derived from editable demo records</p></div></div><div class="alert-list">${[["Patients",state.patients.length],["Appointments",state.appointments.length],["Active admissions",state.admissions.filter((x)=>x.status==="Admitted").length],["Open lab orders",state.laboratory.filter((x)=>x.status!=="Completed").length],["Low-stock items",state.pharmacy.filter((x)=>x.status==="Low stock").length]].map(([label,count])=>`<div class="alert-row"><span class="alert-symbol">▤</span><span><strong>${escapeHTML(label)}</strong><small>${escapeHTML(count)} fictional records</small></span></div>`).join("")}</div></section><section class="panel"><div class="panel-header"><div><h2>Billing demo snapshot</h2><p>Simulated invoices · no transaction processing</p></div></div><div class="bed-summary"><strong>${paid}</strong><span>paid demo invoices</span></div><div class="bed-summary" style="margin-top:12px"><strong>${unpaid}</strong><span>open / due demo invoices</span></div><div class="alert-list"><div class="alert-row"><span class="alert-symbol">＄</span><span><strong>Amounts are illustrative</strong><small>No payment gateway, insurer, or accounting integration is connected.</small></span></div></div></section></div>`;
+    }
+    function render() {
+      document.getElementById("breadcrumb").textContent = currentPage==="dashboard"?"Overview":currentPage==="reports"?"Reports":modules[currentPage]?.title || "Overview";
+      document.querySelectorAll(".nav-item").forEach((item)=>item.classList.toggle("active",item.dataset.page===currentPage));
+      document.getElementById("patient-count").textContent = state.patients.length;
+      if (currentPage==="dashboard") content.innerHTML = dashboardMarkup();
+      else if (currentPage==="reports") content.innerHTML = reportMarkup();
+      else if (modules[currentPage]) content.innerHTML = moduleMarkup(currentPage);
+      else { currentPage="dashboard"; content.innerHTML=dashboardMarkup(); }
+    }
+    function buildField(field, currentValue = "") {
+      const [name,label,type,required,options] = field;
+      const value = currentValue || (name==="lastVisit"||name==="admitted"||name==="due"?today():"");
+      const requiredAttr = required ? " required" : "";
+      let control;
+      if (type==="select") control = `<select name="${escapeHTML(name)}"${requiredAttr}><option value="">Select…</option>${options.map((option)=>`<option value="${escapeHTML(option)}" ${value===option?"selected":""}>${escapeHTML(option)}</option>`).join("")}</select>`;
+      else if (type==="textarea") control = `<textarea name="${escapeHTML(name)}"${requiredAttr} maxlength="500">${escapeHTML(value)}</textarea>`;
+      else control = `<input name="${escapeHTML(name)}" type="${escapeHTML(type)}" value="${escapeHTML(value)}"${type==="number"?' min="0" step="1"':""}${requiredAttr}>`;
+      return `<div class="field"><label for="field-${escapeHTML(name)}">${escapeHTML(label)}${required?" *":""}</label>${control.replace(`name="${escapeHTML(name)}"`,`name="${escapeHTML(name)}" id="field-${escapeHTML(name)}"`)}</div>`;
+    }
+    function openForm(key,id) {
+      const config = modules[key], row = id ? state[key].find((item)=>item.id===id) : null;
+      if (!config || (id && !row)) { showToast("That demo record could not be found.",true); return; }
+      const fields = config.fields.map((field)=>buildField(field,row?.[field[0]])).join("");
+      overlayRoot.innerHTML = `<div class="modal-backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal-header"><div><h2 id="modal-title">${row?"Edit":"Add"} ${escapeHTML(config.singular)}</h2><p>Enter fictional demo information only. This record stays in this browser.</p></div><button class="icon-button" type="button" data-action="close-modal" aria-label="Close dialog">×</button></div><form class="modal-body" id="record-form" data-module="${key}" data-id="${escapeHTML(id||"")}"><div class="form-grid">${fields}</div><div class="modal-footer"><button class="button" type="button" data-action="close-modal">Cancel</button><button class="button primary" type="submit">${row?"Save changes":`Add ${escapeHTML(config.singular)}`}</button></div></form></section></div>`;
+      overlayRoot.querySelector("input,select,textarea")?.focus();
+    }
+    function closeModal() { overlayRoot.innerHTML = ""; }
+    function editStatus(key,id) {
+      const row = state[key].find((item)=>item.id===id);
+      const statusField = modules[key]?.fields.find((item)=>item[0]==="status");
+      if (!row || !statusField || statusField[2]!=="select") { showToast("No status workflow is available for this record.",true); return; }
+      const statuses = statusField[4].filter((status)=>status!==row.status);
+      if (!statuses.length) { showToast("This demo record has no alternate status.",true); return; }
+      const next = statuses[0];
+      if (!window.confirm(`Change demo record ${id} from "${row.status}" to "${next}"?`)) return;
+      row.status = next;
+      persist();
+      render();
+      showToast(`Demo status updated to ${next}.`);
+    }
+    function removeRecord(key,id) {
+      if (!modules[key] || !state[key].some((row)=>row.id===id)) { showToast("That demo record could not be found.",true); return; }
+      if (!window.confirm(`Remove demo ${modules[key].singular} ${id}? This only deletes the local sample record.`)) return;
+      state[key] = state[key].filter((row)=>row.id!==id);
+      persist(); render(); showToast("Demo record removed from this browser.");
+    }
+    function exportCSV(key) {
+      if (!modules[key]) { showToast("Export is not available for this section.",true); return; }
+      const rows = state[key];
+      if (!rows.length) { showToast("There are no demo records to export.",true); return; }
+      const headers = modules[key].columns.map(([,label])=>label);
+      const fields = modules[key].columns.map(([field])=>field);
+      const escapeCell = (value)=>`"${String(value??"").replace(/"/g,'""')}"`;
+      const csv = [headers.map(escapeCell).join(","),...rows.map((row)=>fields.map((field)=>escapeCell(row[field])).join(","))].join("\r\n");
+      const url = URL.createObjectURL(new Blob(["\uFEFF",csv],{type:"text/csv;charset=utf-8"}));
+      const anchor = document.createElement("a");
+      anchor.href=url; anchor.download=`kishlay-northfield-demo-${key}-${today()}.csv`; document.body.append(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+      showToast("CSV exported from fictional demo data.");
+    }
+    function navigate(page) {
+      if (page!=="dashboard" && page!=="reports" && !modules[page]) return;
+      if (!canAccess(page)) { showToast(`The ${roleSelect.value} preview does not have access to that demo section.`,true); return; }
+      currentPage=page; activeFilter="all"; searchQuery=""; document.getElementById("global-search").value=""; render();
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("menu-toggle").setAttribute("aria-expanded","false");
+    }
+    function updateRole() {
+      const role = roleSelect.value;
+      document.getElementById("sidebar-role").textContent = `${role} · Demo preview`;
+      document.querySelectorAll(".nav-item").forEach((item)=>{ item.hidden=!item.dataset.roles.split(",").includes(role); });
+      if (currentPage!=="dashboard" && currentPage!=="reports" && modules[currentPage]) {
+        const nav = document.querySelector(`.nav-item[data-page="${CSS.escape(currentPage)}"]`);
+        if (nav?.hidden) currentPage="dashboard";
+      }
+      render();
+    }
+    function handleAction(target) {
+      const action=target.dataset.action, key=target.dataset.module, id=target.dataset.id;
+      if (target.dataset.page) { navigate(target.dataset.page); return; }
+      const accessPage = key || target.dataset.export;
+      if (accessPage && (action==="add" || action==="edit" || action==="status" || action==="delete" || action==="export") && !canAccess(accessPage)) {
+        showToast(`The ${roleSelect.value} preview does not have access to that demo section.`,true);
+        return;
+      }
+      if (action==="add") openForm(key);
+      if (action==="edit") openForm(key,id);
+      if (action==="status") editStatus(key,id);
+      if (action==="delete") removeRecord(key,id);
+      if (action==="export") exportCSV(target.dataset.export);
+      if (action==="close-modal") closeModal();
+    }
+    document.addEventListener("click",(event)=>{
+      const target=event.target.closest("[data-page],[data-action]");
+      if (target) handleAction(target);
+    });
+    overlayRoot.addEventListener("click",(event)=>{
+      if (event.target===overlayRoot.firstElementChild) closeModal();
+    });
+    document.getElementById("global-search").addEventListener("input",(event)=>{
+      searchQuery=event.target.value.trim();
+      if (searchQuery) {
+        if (!canAccess("patients")) {
+          event.target.value="";
+          searchQuery="";
+          showToast(`The ${roleSelect.value} preview does not have access to patient search.`,true);
+          return;
+        }
+        currentPage="patients";
+        render();
+      } else if (currentPage==="patients") render();
+    });
+    content.addEventListener("input",(event)=>{
+      if (event.target.id==="status-filter") return;
+      if (event.target.matches("input[type=search]")) { searchQuery=event.target.value.trim(); render(); }
+    });
+    content.addEventListener("change",(event)=>{
+      if (event.target.id==="status-filter") { activeFilter=event.target.value; render(); }
+    });
+    overlayRoot.addEventListener("submit",(event)=>{
+      if (event.target.id!=="record-form") return;
+      event.preventDefault();
+      const form=event.target, key=form.dataset.module, id=form.dataset.id, config=modules[key];
+      if (!config || !form.reportValidity()) return;
+      const values=Object.fromEntries(new FormData(form).entries());
+      const row=id?state[key].find((item)=>item.id===id):null;
+      if (id && !row) { closeModal(); showToast("That demo record could not be found.",true); return; }
+      if (row) Object.assign(row,values);
+      else {
+        const prefix={patients:"PT",appointments:"AP",admissions:"AD",laboratory:"LB",pharmacy:"RX",billing:"BL",staff:"ST"}[key];
+        if (key==="patients") values.lastVisit=today();
+        state[key].unshift({id:makeId(prefix,state[key]),...values});
+      }
+      try { persist(); } catch (error) { showToast(`Could not save demo data: ${error.message}`,true); return; }
+      closeModal(); render(); showToast(`${config.singular[0].toUpperCase()+config.singular.slice(1)} ${row?"updated":"added"} in this browser.`);
+    });
+    roleSelect.addEventListener("change",updateRole);
+    document.getElementById("menu-toggle").addEventListener("click",()=>{
+      const sidebar=document.getElementById("sidebar"), open=sidebar.classList.toggle("open");
+      document.getElementById("menu-toggle").setAttribute("aria-expanded",String(open));
+      document.getElementById("menu-toggle").setAttribute("aria-label",open?"Close navigation":"Open navigation");
+    });
+    document.getElementById("sidebar-close").addEventListener("click",()=>{
+      document.getElementById("sidebar").classList.remove("open");
+      document.getElementById("menu-toggle").setAttribute("aria-expanded","false");
+      document.getElementById("menu-toggle").setAttribute("aria-label","Open navigation");
+      document.getElementById("menu-toggle").focus();
+    });
+    document.getElementById("notifications-button").addEventListener("click",()=>{
+      const alerts=state.pharmacy.filter((item)=>item.status==="Low stock").length+state.laboratory.filter((item)=>item.status==="Pending").length;
+      window.alert(alerts?`Demo notifications: ${alerts} sample item(s) need attention. View the Overview for details.`:"No demo notifications right now.");
+    });
+    document.addEventListener("keydown",(event)=>{ if(event.key==="Escape" && overlayRoot.firstElementChild) closeModal(); });
+    render();
+  </script>
+</body>
+</html>
