@@ -1,453 +1,138 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#111a24" />
-    <meta name="description" content="Enter Aethermoor, an original university of magic. Meet student spellwright Elian Thorn and explore the art of arcane study." />
-    <title>Aethermoor — University of Arcane Arts</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet" />
-    <style>
-      :root {
-        --night: #111a24;
-        --night-soft: #1b2935;
-        --ink: #20231f;
-        --muted: #76756c;
-        --parchment: #f5f0e5;
-        --paper: #fcfaf5;
-        --gold: #c9a76b;
-        --gold-light: #e5ce9e;
-        --line: #e7e0d1;
-        --serif: "Playfair Display", Georgia, serif;
-        --display: "Cinzel", Georgia, serif;
-        --sans: "DM Sans", Arial, sans-serif;
-      }
-
-      * { box-sizing: border-box; }
-      html { scroll-behavior: smooth; scroll-padding-top: 85px; }
-      body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
-      button, input { font: inherit; }
-      a { color: inherit; }
-      .wrap { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
-
-      .announcement {
-        min-height: 34px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 7px;
-        padding: 7px 18px;
-        background: #0c131b;
-        color: #eee7d9;
-        font-size: 10px;
-        letter-spacing: .045em;
-        text-align: center;
-      }
-      .announcement span { color: var(--gold-light); }
-      .announcement a { color: var(--gold-light); font-weight: 700; text-underline-offset: 3px; }
-
-      .header { position: sticky; z-index: 10; top: 0; background: rgba(252,250,245,.97); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
-      .nav-row { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-      .brand { display: inline-flex; align-items: center; gap: 11px; flex: 0 0 auto; color: var(--night); text-decoration: none; }
-      .crest { width: 39px; height: 45px; display: grid; place-items: center; border: 1px solid var(--gold); clip-path: polygon(0 0,100% 0,100% 72%,50% 100%,0 72%); background: var(--night); color: var(--gold-light); font-family: var(--display); font-size: 19px; }
-      .brand-name { display: block; font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: .12em; }
-      .brand-subtitle { display: block; margin-top: 4px; color: #777267; font-size: 8px; letter-spacing: .17em; text-transform: uppercase; }
-      .nav-links { display: flex; align-items: center; gap: clamp(17px, 2.5vw, 34px); }
-      .nav-links a { color: #42443f; font-size: 10px; font-weight: 600; text-decoration: none; transition: color .2s; }
-      .nav-links a:hover { color: #9c7438; }
-      .nav-links .nav-apply { padding: 12px 16px; background: var(--night); color: #fff; }
-      .nav-links .nav-apply:hover { background: #34434c; color: #fff; }
-      .menu-toggle { display: none; width: 40px; height: 40px; border: 1px solid var(--line); background: transparent; color: var(--night); cursor: pointer; font-size: 20px; }
-
-      .hero {
-        position: relative;
-        min-height: 570px;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        background: var(--night);
-        color: #fff;
-      }
-      .hero-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 45%; opacity: .7; }
-      .hero::after { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(12,18,24,.94), rgba(12,18,24,.77) 45%, rgba(12,18,24,.20)), linear-gradient(0deg, rgba(12,18,24,.5), transparent 55%); content: ""; }
-      .hero-content { position: relative; z-index: 1; width: min(1200px, calc(100% - 64px)); margin: 0 auto; padding: 75px 0 98px; }
-      .eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; color: var(--gold-light); font-size: 9px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; }
-      .eyebrow::before { width: 24px; height: 1px; background: var(--gold); content: ""; }
-      .hero h1 { max-width: 650px; margin: 0; font-family: var(--display); font-size: clamp(43px, 6.6vw, 78px); font-weight: 500; letter-spacing: .015em; line-height: 1.07; }
-      .hero h1 em { color: var(--gold-light); font-family: var(--serif); font-weight: 500; }
-      .hero-copy { max-width: 465px; margin: 19px 0 25px; color: rgba(255,255,255,.78); font-size: 12px; line-height: 1.85; }
-      .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 11px; }
-      .button { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 0 18px; border: 1px solid transparent; background: var(--gold); color: #1d211e; font-size: 10px; font-weight: 700; text-decoration: none; transition: background .2s, color .2s, border-color .2s; }
-      .button:hover { background: var(--gold-light); }
-      .button-outline { border-color: rgba(255,255,255,.47); background: transparent; color: #fff; }
-      .button-outline:hover { background: #fff; color: var(--night); }
-      .hero-note { position: absolute; z-index: 1; right: max(32px, calc((100% - 1200px)/2)); bottom: 25px; color: rgba(255,255,255,.68); font-family: var(--display); font-size: 9px; letter-spacing: .13em; }
-      .hero-note span { padding: 0 8px; color: var(--gold); }
-
-      .student-feature { position: absolute; z-index: 2; right: max(32px, calc((100% - 1200px)/2)); bottom: 52px; width: 255px; display: flex; align-items: center; gap: 12px; padding: 10px; border: 1px solid rgba(229,206,158,.43); background: rgba(15,22,29,.78); backdrop-filter: blur(10px); }
-      .student-feature img { width: 55px; height: 62px; object-fit: cover; object-position: center 35%; }
-      .student-feature span { display: block; color: var(--gold-light); font-size: 8px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; }
-      .student-feature strong { display: block; margin-top: 5px; font-family: var(--serif); font-size: 16px; font-weight: 500; }
-      .student-feature small { display: block; margin-top: 4px; color: rgba(255,255,255,.65); font-size: 9px; }
-
-      .stats { position: relative; z-index: 2; display: grid; grid-template-columns: repeat(4, 1fr); margin: -29px auto 0; border: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 30px rgba(30,28,21,.07); }
-      .stat { min-height: 84px; display: flex; align-items: center; justify-content: center; gap: 11px; padding: 14px; border-right: 1px solid var(--line); }
-      .stat:last-child { border-right: 0; }
-      .stat-number { color: #805e30; font-family: var(--serif); font-size: 28px; letter-spacing: -.04em; }
-      .stat-label { max-width: 105px; color: var(--muted); font-size: 9px; line-height: 1.5; }
-
-      .section { padding: 84px 0; }
-      .section-kicker { margin: 0 0 11px; color: #946c36; font-size: 9px; font-weight: 700; letter-spacing: .19em; text-transform: uppercase; }
-      .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 29px; }
-      .section-heading h2, .about-copy h2 { margin: 0; color: var(--night); font-family: var(--display); font-size: clamp(32px, 4vw, 46px); font-weight: 500; letter-spacing: -.01em; line-height: 1.14; }
-      .section-intro { max-width: 355px; margin: 0; color: var(--muted); font-size: 11px; line-height: 1.8; }
-
-      .programs-section { background: var(--parchment); }
-      .program-tools { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 17px; }
-      .program-tabs { display: flex; flex-wrap: wrap; gap: 7px; }
-      .program-tab { padding: 9px 13px; border: 1px solid #ded5c4; background: transparent; color: #656158; cursor: pointer; font-size: 9px; transition: all .18s; }
-      .program-tab:hover, .program-tab.active { border-color: var(--night); background: var(--night); color: #fff; }
-      .search-box { width: min(220px,100%); min-height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border: 1px solid #ded5c4; background: var(--paper); color: var(--muted); }
-      .search-box input { width: 100%; min-width: 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 10px; }
-      .program-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 13px; }
-      .program-card { min-height: 182px; display: flex; flex-direction: column; padding: 20px; border: 1px solid #e6dece; background: var(--paper); transition: transform .2s,box-shadow .2s; }
-      .program-card:hover { transform: translateY(-3px); box-shadow: 0 10px 22px rgba(40,34,23,.08); }
-      .program-card[hidden] { display: none; }
-      .program-icon { width: 32px; height: 32px; display: grid; place-items: center; margin-bottom: 13px; border: 1px solid #e2d3b6; color: #94703b; font-family: var(--serif); font-size: 17px; }
-      .program-type { margin-bottom: 5px; color: #94703b; font-size: 8px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
-      .program-card h3 { margin: 0; color: var(--night); font-family: var(--serif); font-size: 18px; font-weight: 500; }
-      .program-card p { margin: 8px 0 14px; color: var(--muted); font-size: 9px; line-height: 1.7; }
-      .program-link { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; color: var(--night); font-size: 9px; font-weight: 700; text-decoration: none; }
-      .program-link span { color: #9a7138; font-size: 14px; }
-      .empty-state { display: none; padding: 30px; color: var(--muted); font-size: 11px; text-align: center; }
-      .empty-state.visible { display: block; }
-
-      .about { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 55px; }
-      .about-image-wrap { position: relative; min-height: 370px; }
-      .about-image { position: absolute; inset: 0 32px 27px 0; width: calc(100% - 32px); height: calc(100% - 27px); object-fit: cover; }
-      .about-badge { position: absolute; right: 0; bottom: 0; width: 48%; min-height: 120px; display: flex; flex-direction: column; justify-content: center; padding: 18px; background: var(--night); color: #fff; }
-      .about-badge strong { color: var(--gold-light); font-family: var(--serif); font-size: 22px; font-weight: 500; }
-      .about-badge span { margin-top: 6px; color: rgba(255,255,255,.73); font-size: 9px; line-height: 1.6; }
-      .about-copy h2 { margin-bottom: 17px; font-size: clamp(33px,4vw,45px); }
-      .about-copy > p:not(.section-kicker) { margin: 0 0 12px; color: var(--muted); font-size: 11px; line-height: 1.85; }
-      .about-copy .button { margin-top: 10px; background: var(--night); color: #fff; }
-      .about-copy .button:hover { background: #34434c; }
-
-      .student-section { padding: 0 0 82px; }
-      .student-story { display: grid; grid-template-columns: .9fr 1.1fr; overflow: hidden; background: var(--night); color: #fff; }
-      .student-story-image { position: relative; min-height: 355px; }
-      .student-story-image img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
-      .student-story-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(27px,5vw,57px); }
-      .student-story-copy .section-kicker { color: var(--gold-light); }
-      .student-story-copy h2 { margin: 0; color: #fff; font-family: var(--display); font-size: clamp(29px,4vw,43px); font-weight: 500; line-height: 1.18; }
-      .student-story-copy h2 em { color: var(--gold-light); font-family: var(--serif); font-weight: 500; }
-      .student-story-copy p:not(.section-kicker) { max-width: 440px; margin: 16px 0 20px; color: rgba(255,255,255,.72); font-size: 10px; line-height: 1.9; }
-      .student-story-copy .button { width: fit-content; }
-
-      .campus-section { background: #18212a; color: #fff; }
-      .campus-section .section-heading h2 { color: #fff; }
-      .campus-section .section-kicker { color: var(--gold-light); }
-      .campus-section .section-intro { color: rgba(255,255,255,.66); }
-      .campus-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 12px; }
-      .campus-card { position: relative; min-height: 235px; overflow: hidden; background: #303c43; }
-      .campus-card:first-child { min-height: 285px; grid-row: span 2; }
-      .campus-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .5s; }
-      .campus-card:hover img { transform: scale(1.04); }
-      .campus-card::after { position: absolute; inset: 0; background: linear-gradient(0deg,rgba(8,13,17,.83),transparent 74%); content: ""; }
-      .campus-label { position: absolute; z-index: 1; right: 15px; bottom: 15px; left: 15px; }
-      .campus-label span { display: block; margin-bottom: 5px; color: var(--gold-light); font-size: 8px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
-      .campus-label h3 { margin: 0; font-family: var(--serif); font-size: 19px; font-weight: 500; }
-
-      .cta { padding: 52px 0; background: #ede5d5; }
-      .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 22px; }
-      .cta h2 { max-width: 600px; margin: 0; color: var(--night); font-family: var(--display); font-size: clamp(28px,4vw,42px); font-weight: 500; line-height: 1.2; }
-      .cta h2 em { color: #8d6834; font-family: var(--serif); }
-      .cta-actions { display: flex; flex-wrap: wrap; gap: 9px; }
-      .cta .button { background: var(--night); color: #fff; }
-      .cta .button:hover { background: #34434c; }
-      .cta .button-outline { border-color: var(--night); background: transparent; color: var(--night); }
-      .cta .button-outline:hover { background: var(--night); color: #fff; }
-
-      .footer { padding: 39px 0 16px; background: #0c131b; color: #fff; }
-      .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 28px; padding-bottom: 28px; }
-      .footer .brand { color: #fff; }
-      .footer .brand-subtitle { color: rgba(255,255,255,.55); }
-      .footer-note { max-width: 245px; margin: 13px 0 0; color: rgba(255,255,255,.6); font-size: 9px; line-height: 1.8; }
-      .footer-col h3 { margin: 0 0 13px; color: var(--gold-light); font-size: 9px; letter-spacing: .13em; text-transform: uppercase; }
-      .footer-col a { display: block; width: fit-content; margin-bottom: 9px; color: rgba(255,255,255,.72); font-size: 9px; text-decoration: none; }
-      .footer-col a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
-      .footer-bottom { display: flex; justify-content: space-between; gap: 12px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.5); font-size: 8px; }
-
-      @media (max-width: 850px) {
-        .wrap { width: min(100% - 40px,680px); }
-        .menu-toggle { display: grid; place-items: center; }
-        .nav-links { position: absolute; top: 100%; right: 0; left: 0; display: none; align-items: stretch; gap: 0; padding: 7px 20px 15px; border-bottom: 1px solid var(--line); background: var(--paper); box-shadow: 0 10px 20px rgba(20,25,30,.08); }
-        .nav-links.open { display: flex; flex-direction: column; }
-        .nav-links a { padding: 12px 0; border-bottom: 1px solid var(--line); }
-        .nav-links .nav-apply { margin-top: 8px; padding: 12px; text-align: center; }
-        .hero { min-height: 525px; }
-        .hero-content { width: min(100% - 40px,680px); }
-        .student-feature { right: 20px; bottom: 50px; width: 225px; }
-        .hero-note { display: none; }
-        .section { padding: 68px 0; }
-        .about { gap: 32px; }
-        .about-image-wrap { min-height: 315px; }
-        .student-section { padding: 0 0 65px; }
-        .campus-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-        .campus-card:first-child { min-height: 250px; grid-column: span 2; grid-row: auto; }
-        .campus-card { min-height: 205px; }
-        .footer-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
-      }
-      @media (max-width: 600px) {
-        .wrap { width: calc(100% - 36px); }
-        .announcement { flex-wrap: wrap; gap: 4px; font-size: 9px; }
-        .nav-row { min-height: 67px; }
-        .brand-name { font-size: 11px; }
-        .crest { width: 34px; height: 40px; }
-        .hero { min-height: 585px; align-items: flex-end; }
-        .hero::after { background: linear-gradient(90deg,rgba(12,18,24,.8),rgba(12,18,24,.36)),linear-gradient(0deg,rgba(12,18,24,.91),transparent 95%); }
-        .hero-content { width: calc(100% - 36px); padding: 65px 0 142px; }
-        .hero h1 { font-size: clamp(41px,11vw,59px); }
-        .hero-copy { max-width: 370px; font-size: 11px; }
-        .student-feature { right: 18px; bottom: 21px; width: 225px; }
-        .stats { grid-template-columns: repeat(2,1fr); margin-top: -19px; }
-        .stat { min-height: 68px; justify-content: flex-start; padding: 10px; border-bottom: 1px solid var(--line); }
-        .stat:nth-child(2) { border-right: 0; }
-        .stat:nth-child(n+3) { border-bottom: 0; }
-        .stat-number { font-size: 24px; }
-        .stat-label { font-size: 8px; }
-        .section { padding: 56px 0; }
-        .section-heading { align-items: flex-start; flex-direction: column; gap: 12px; margin-bottom: 22px; }
-        .section-heading h2 { font-size: 35px; }
-        .section-intro { max-width: 430px; }
-        .program-tools { align-items: stretch; flex-direction: column-reverse; }
-        .search-box { width: 100%; }
-        .program-grid { grid-template-columns: 1fr; gap: 9px; }
-        .program-card { min-height: 168px; padding: 18px; }
-        .about { grid-template-columns: 1fr; gap: 30px; }
-        .about-image-wrap { min-height: 285px; }
-        .about-copy h2 { font-size: 35px; }
-        .student-section { padding: 0 0 54px; }
-        .student-story { grid-template-columns: 1fr; }
-        .student-story-image { min-height: 250px; }
-        .student-story-copy { padding: 26px 22px 30px; }
-        .student-story-copy h2 { font-size: 31px; }
-        .campus-grid { gap: 9px; }
-        .campus-card:first-child { min-height: 220px; }
-        .campus-card { min-height: 168px; }
-        .campus-label { right: 10px; bottom: 10px; left: 10px; }
-        .campus-label h3 { font-size: 16px; }
-        .cta { padding: 39px 0; }
-        .cta-inner { align-items: flex-start; flex-direction: column; }
-        .cta h2 { font-size: 32px; }
-        .footer-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 23px 15px; }
-        .footer-grid > :first-child { grid-column: span 2; }
-        .footer-bottom { flex-direction: column; }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
-      }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Manage student records with a local student management system.">
+    <title>Students | CampusDesk</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
   </head>
   <body>
-    <div class="announcement"><span>Autumn term applications are open</span> · Your first spell starts with a first step. <a href="#apply">Discover admissions →</a></div>
-
-    <header class="header">
-      <div class="wrap nav-row">
-        <a class="brand" href="#" aria-label="Aethermoor University home">
-          <span class="crest" aria-hidden="true">A</span>
-          <span><span class="brand-name">AETHERMOOR</span><span class="brand-subtitle">University of Arcane Arts</span></span>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="CampusDesk home">
+          <span class="brand-mark">C</span>
+          <span><strong>CampusDesk</strong><small>Student records</small></span>
         </a>
-        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-nav">☰</button>
-        <nav class="nav-links" id="primary-nav" aria-label="Main navigation">
-          <a href="#programs">Schools of magic</a>
-          <a href="#about">Our university</a>
-          <a href="#student">Student stories</a>
-          <a href="#campus">Explore campus</a>
-          <a class="nav-apply" href="#apply">Apply to Aethermoor ↗</a>
-        </nav>
-      </div>
-    </header>
-
-    <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <img class="hero-image" src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&amp;fit=crop&amp;w=2200&amp;q=88" alt="An ancient, atmospheric stone castle rising above the landscape" />
-        <div class="hero-content">
-          <p class="eyebrow">Where wonder becomes a discipline</p>
-          <h1 id="hero-title">A world of magic.<br /><em>A mind of your own.</em></h1>
-          <p class="hero-copy">Beyond the mist lies Aethermoor: an independent university for curious minds, courageous spellcraft, and magic practiced with purpose.</p>
-          <div class="button-row">
-            <a class="button" href="#programs">Explore the schools <span aria-hidden="true">→</span></a>
-            <a class="button button-outline" href="#student">Meet Elian Thorn</a>
-          </div>
+        <div class="side-label">Workspace</div>
+        <a class="nav-link active" href="#students"><span aria-hidden="true">▦</span> Students</a>
+        <div class="sidebar-note">
+          <span class="note-icon" aria-hidden="true">✓</span>
+          <strong>Your records, organized.</strong>
+          <p>Student information is stored locally in your SQLite database.</p>
         </div>
-        <div class="student-feature" aria-label="Featured student, Elian Thorn">
-          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&amp;fit=crop&amp;w=180&amp;h=200&amp;q=85" alt="Portrait of fictional Aethermoor student Elian Thorn" />
-          <div><span>Student spotlight</span><strong>Elian Thorn</strong><small>First-year · Arcane Studies</small></div>
-        </div>
-        <div class="hero-note">EST. 1427 <span>✦</span> BEYOND THE ORDINARY</div>
-      </section>
+        <div class="sidebar-footer"><span class="online-dot"></span> Local database connected</div>
+      </aside>
 
-      <div class="wrap stats" aria-label="Aethermoor at a glance">
-        <div class="stat"><strong class="stat-number">7</strong><span class="stat-label">schools of arcane study</span></div>
-        <div class="stat"><strong class="stat-number">14:1</strong><span class="stat-label">apprentices to mentors</span></div>
-        <div class="stat"><strong class="stat-number">31</strong><span class="stat-label">realms represented in our halls</span></div>
-        <div class="stat"><strong class="stat-number">1</strong><span class="stat-label">very good reason to be curious</span></div>
-      </div>
+      <main class="main-content" id="students">
+        <header class="topbar">
+          <div class="breadcrumb">Workspace <span>/</span> <strong>Students</strong></div>
+          <div class="topbar-label"><span class="online-dot"></span> Academic year 2025–26</div>
+        </header>
 
-      <section class="section programs-section" id="programs" aria-labelledby="programs-title">
-        <div class="wrap">
-          <div class="section-heading">
-            <div><p class="section-kicker">The seven schools</p><h2 id="programs-title">Choose what calls<br />to you.</h2></div>
-            <p class="section-intro">Magic is not one path. Study the living world, trace the stars, or learn how a single word can change everything.</p>
-          </div>
-          <div class="program-tools">
-            <div class="program-tabs" role="group" aria-label="Filter schools by field">
-              <button class="program-tab active" type="button" data-program-filter="all" aria-pressed="true">All schools</button>
-              <button class="program-tab" type="button" data-program-filter="craft" aria-pressed="false">Practical arts</button>
-              <button class="program-tab" type="button" data-program-filter="nature" aria-pressed="false">Nature &amp; stars</button>
-              <button class="program-tab" type="button" data-program-filter="lore" aria-pressed="false">Lore &amp; history</button>
+        <section class="page">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow">STUDENT DIRECTORY</p>
+              <h1>Students</h1>
+              <p class="subtitle">Manage student records and keep your directory up to date.</p>
             </div>
-            <label class="search-box"><span aria-hidden="true">⌕</span><input id="program-search" type="search" placeholder="Find a school" aria-label="Search schools of magic" /></label>
+            <button class="button button-primary" id="add-student" type="button">
+              <span aria-hidden="true">＋</span> Add student
+            </button>
           </div>
-          <div class="program-grid" id="program-grid">
-            <article class="program-card" data-category="craft" data-name="spellcraft charms incantation"><span class="program-icon" aria-hidden="true">✧</span><span class="program-type">Practical arts</span><h3>Spellcraft &amp; Charms</h3><p>Shape intention into action through careful practice, focus, and beautifully precise words.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="nature" data-name="wild magic botanical gardens plants"><span class="program-icon" aria-hidden="true">❋</span><span class="program-type">Nature &amp; stars</span><h3>Wild Magic &amp; Botanicals</h3><p>Study the old conversation between growing things, changing seasons, and living magic.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="nature" data-name="celestial navigation astronomy stars"><span class="program-icon" aria-hidden="true">☾</span><span class="program-type">Nature &amp; stars</span><h3>Celestial Navigation</h3><p>Read the heavens, chart the unseen currents, and find your bearing among the stars.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="craft" data-name="alchemy elements transformation"><span class="program-icon" aria-hidden="true">⚗</span><span class="program-type">Practical arts</span><h3>Alchemy of the Elements</h3><p>Explore the nature of matter and master transformations that begin with observation.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="lore" data-name="forgotten languages ancient scripts runes"><span class="program-icon" aria-hidden="true">ᚱ</span><span class="program-type">Lore &amp; history</span><h3>Forgotten Languages</h3><p>Decipher the scripts, symbols, and stories hidden in the oldest enchanted records.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="craft" data-name="defensive wards protection magical safety"><span class="program-icon" aria-hidden="true">⬡</span><span class="program-type">Practical arts</span><h3>Defensive Wards</h3><p>Learn to protect people and places with responsible, resilient protective magic.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-            <article class="program-card" data-category="lore" data-name="arcane history magical civilization"><span class="program-icon" aria-hidden="true">⌘</span><span class="program-type">Lore &amp; history</span><h3>Arcane History</h3><p>Uncover how magical societies have changed, and what the past asks of us now.</p><a class="program-link" href="#apply">Enter the school <span aria-hidden="true">→</span></a></article>
-          </div>
-          <p class="empty-state" id="empty-state" aria-live="polite">No schools match that search. Try another subject.</p>
+
+          <section class="stats-grid" aria-label="Student summary">
+            <article class="stat-card">
+              <div class="stat-icon icon-violet" aria-hidden="true">♙</div>
+              <div><p>Total students</p><strong id="stat-total">—</strong><small>Across all courses</small></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon icon-green" aria-hidden="true">✓</div>
+              <div><p>Active students</p><strong id="stat-active">—</strong><small>Currently enrolled</small></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon icon-amber" aria-hidden="true">Ⅱ</div>
+              <div><p>Inactive students</p><strong id="stat-inactive">—</strong><small>Not currently enrolled</small></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon icon-blue" aria-hidden="true">▤</div>
+              <div><p>Courses</p><strong id="stat-courses">—</strong><small>Distinct programs</small></div>
+            </article>
+          </section>
+
+          <section class="directory-card" aria-labelledby="directory-title">
+            <div class="directory-heading">
+              <div>
+                <h2 id="directory-title">All students</h2>
+                <p>Search, review, and update your student records.</p>
+              </div>
+              <label class="search-field">
+                <span aria-hidden="true">⌕</span>
+                <input id="student-search" type="search" placeholder="Search students..." autocomplete="off" aria-label="Search students">
+                <kbd>⌘ K</kbd>
+              </label>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">STUDENT</th>
+                    <th scope="col">STUDENT ID</th>
+                    <th scope="col">COURSE</th>
+                    <th scope="col">YEAR</th>
+                    <th scope="col">STATUS</th>
+                    <th scope="col"><span class="visually-hidden">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="student-rows">
+                  <tr><td class="table-message" colspan="6">Loading students…</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="result-count">Loading records…</span>
+              <span class="footer-note">Student records are saved to your local database.</span>
+            </div>
+          </section>
+          <p class="page-footer">CampusDesk <span>·</span> Student management</p>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="student-dialog" id="student-dialog" aria-labelledby="dialog-title">
+      <form id="student-form">
+        <div class="dialog-heading">
+          <div><p class="eyebrow">STUDENT RECORD</p><h2 id="dialog-title">Add student</h2></div>
+          <button class="icon-close" id="close-dialog" type="button" aria-label="Close dialog">×</button>
         </div>
-      </section>
-
-      <section class="section" id="about" aria-labelledby="about-title">
-        <div class="wrap about">
-          <div class="about-image-wrap">
-            <img class="about-image" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&amp;fit=crop&amp;w=1100&amp;q=85" alt="A grand old library filled with books and warm light" loading="lazy" />
-            <div class="about-badge"><strong>Founded on wonder.</strong><span>Built for a new generation of thoughtful magic-makers.</span></div>
-          </div>
-          <div class="about-copy">
-            <p class="section-kicker">A different kind of university</p>
-            <h2 id="about-title">Ancient walls.<br />An open mind.</h2>
-            <p>Hidden between the ordinary and the impossible, Aethermoor has welcomed determined students for centuries. Here, the old ways are worth learning—and worth questioning.</p>
-            <p>Our mentors teach magic with care, curiosity, and a belief that how you use your knowledge matters just as much as what you know.</p>
-            <a class="button" href="#campus">Discover Aethermoor <span aria-hidden="true">→</span></a>
-          </div>
+        <input id="record-id" name="record_id" type="hidden">
+        <div class="form-grid">
+          <label>Full name<input name="name" required maxlength="120" placeholder="e.g. Maya Chen"></label>
+          <label>Student ID<input name="student_id" required maxlength="40" placeholder="e.g. STU-2025-001"></label>
+          <label class="field-wide">Email address<input name="email" type="email" required maxlength="254" placeholder="student@university.edu"></label>
+          <label>Course<input name="course" required maxlength="100" placeholder="e.g. Computer Science"></label>
+          <label>Year of study
+            <select name="year" required>
+              <option value="">Select year</option>
+              <option value="1">Year 1</option><option value="2">Year 2</option>
+              <option value="3">Year 3</option><option value="4">Year 4</option>
+              <option value="5">Year 5</option><option value="6">Year 6</option>
+              <option value="7">Year 7</option><option value="8">Year 8</option>
+            </select>
+          </label>
+          <label class="field-wide">Enrollment status
+            <select name="status" required><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+          </label>
         </div>
-      </section>
-
-      <section class="student-section" id="student" aria-labelledby="student-title">
-        <div class="wrap student-story">
-          <div class="student-story-image">
-            <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&amp;fit=crop&amp;w=900&amp;q=85" alt="Elian Thorn, a fictional first-year student at Aethermoor" loading="lazy" />
-          </div>
-          <div class="student-story-copy">
-            <p class="section-kicker">Meet the next generation</p>
-            <h2 id="student-title">“The best spells begin<br />with a <em>better question.</em>”</h2>
-            <p>Elian Thorn arrived knowing almost nothing about his unusual gift—except that the old rulebook didn't explain it. Now he's learning to listen closely, experiment bravely, and make room for a little mystery.</p>
-            <a class="button" href="#apply">Follow Elian's first year <span aria-hidden="true">→</span></a>
-          </div>
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+        <div class="dialog-actions">
+          <button class="button button-secondary" id="cancel-dialog" type="button">Cancel</button>
+          <button class="button button-primary" id="save-student" type="submit">Save student</button>
         </div>
-      </section>
-
-      <section class="section campus-section" id="campus" aria-labelledby="campus-title">
-        <div class="wrap">
-          <div class="section-heading">
-            <div><p class="section-kicker">Life beyond the lecture</p><h2 id="campus-title">Find your place<br />in the unknown.</h2></div>
-            <p class="section-intro">Between the lantern-lit library and the greenhouse that never sleeps, your next discovery might be just around the corner.</p>
-          </div>
-          <div class="campus-grid">
-            <article class="campus-card"><img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&amp;fit=crop&amp;w=1000&amp;q=85" alt="Ancient stone architecture framed by a mysterious landscape" loading="lazy" /><div class="campus-label"><span>Our home in the hills</span><h3>Old stones, new stories</h3></div></article>
-            <article class="campus-card"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&amp;fit=crop&amp;w=800&amp;q=85" alt="Shelves of books lining a peaceful old library" loading="lazy" /><div class="campus-label"><span>Find a quiet corner</span><h3>The endless library</h3></div></article>
-            <article class="campus-card"><img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&amp;fit=crop&amp;w=800&amp;q=85" alt="A sunlit forest trail on the edge of campus" loading="lazy" /><div class="campus-label"><span>Step outside</span><h3>The whispering wood</h3></div></article>
-            <article class="campus-card"><img src="https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?auto=format&amp;fit=crop&amp;w=800&amp;q=85" alt="Early morning light over a misty mountain valley" loading="lazy" /><div class="campus-label"><span>Look a little closer</span><h3>Magic in the everyday</h3></div></article>
-            <article class="campus-card"><img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&amp;fit=crop&amp;w=800&amp;q=85" alt="Friends sharing a sunny afternoon outdoors" loading="lazy" /><div class="campus-label"><span>Find your people</span><h3>Make a little mischief</h3></div></article>
-          </div>
-        </div>
-      </section>
-
-      <section class="cta" id="apply" aria-labelledby="apply-title">
-        <div class="wrap cta-inner">
-          <div><p class="section-kicker">The next chapter is yours</p><h2 id="apply-title">Ready to see what <em>you can do?</em></h2></div>
-          <div class="cta-actions">
-            <a class="button" href="mailto:admissions@aethermoor.example">Begin your application <span aria-hidden="true">→</span></a>
-            <a class="button button-outline" href="mailto:admissions@aethermoor.example?subject=Visit%20Aethermoor">Request a campus tour</a>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer class="footer">
-      <div class="wrap">
-        <div class="footer-grid">
-          <div>
-            <a class="brand" href="#" aria-label="Aethermoor University home"><span class="crest" aria-hidden="true">A</span><span><span class="brand-name">AETHERMOOR</span><span class="brand-subtitle">University of Arcane Arts</span></span></a>
-            <p class="footer-note">An original university of magic for curious minds, thoughtful spellcraft, and the next generation of wonder-makers.</p>
-          </div>
-          <div class="footer-col"><h3>Discover</h3><a href="#programs">Schools of magic</a><a href="#about">Our university</a><a href="#student">Student stories</a><a href="#campus">Campus life</a></div>
-          <div class="footer-col"><h3>Your next step</h3><a href="#apply">Apply to Aethermoor</a><a href="#apply">Ask a mentor</a><a href="#apply">Visit the grounds</a><a href="#programs">Explore a school</a></div>
-          <div class="footer-col"><h3>Send an owl</h3><a href="mailto:admissions@aethermoor.example">admissions@aethermoor.example</a><a href="#about">Accessibility</a><a href="#about">Contact the university</a></div>
-        </div>
-        <div class="footer-bottom"><span>© 2026 Aethermoor University of Arcane Arts. A work of original fantasy.</span><span>Study with care. Wonder without limits.</span></div>
-      </div>
-    </footer>
-
-    <script>
-      const menuToggle = document.getElementById("menu-toggle");
-      const primaryNav = document.getElementById("primary-nav");
-
-      menuToggle.addEventListener("click", () => {
-        const isOpen = primaryNav.classList.toggle("open");
-        menuToggle.setAttribute("aria-expanded", String(isOpen));
-        menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
-        menuToggle.textContent = isOpen ? "×" : "☰";
-      });
-
-      primaryNav.addEventListener("click", (event) => {
-        if (event.target.closest("a")) {
-          primaryNav.classList.remove("open");
-          menuToggle.setAttribute("aria-expanded", "false");
-          menuToggle.setAttribute("aria-label", "Open navigation");
-          menuToggle.textContent = "☰";
-        }
-      });
-
-      const programSearch = document.getElementById("program-search");
-      const programCards = Array.from(document.querySelectorAll(".program-card"));
-      const programTabs = Array.from(document.querySelectorAll(".program-tab"));
-      const emptyState = document.getElementById("empty-state");
-      let activeProgramFilter = "all";
-
-      function filterPrograms() {
-        const query = programSearch.value.trim().toLowerCase();
-        let visibleCount = 0;
-        programCards.forEach((card) => {
-          const matchesCategory = activeProgramFilter === "all" || card.dataset.category === activeProgramFilter;
-          const matchesSearch = card.dataset.name.includes(query);
-          const visible = matchesCategory && matchesSearch;
-          card.hidden = !visible;
-          if (visible) visibleCount += 1;
-        });
-        emptyState.classList.toggle("visible", visibleCount === 0);
-      }
-
-      programTabs.forEach((tab) => {
-        tab.addEventListener("click", () => {
-          activeProgramFilter = tab.dataset.programFilter;
-          programTabs.forEach((item) => {
-            const isActive = item === tab;
-            item.classList.toggle("active", isActive);
-            item.setAttribute("aria-pressed", String(isActive));
-          });
-          filterPrograms();
-        });
-      });
-      programSearch.addEventListener("input", filterPrograms);
-    </script>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
   </body>
 </html>
